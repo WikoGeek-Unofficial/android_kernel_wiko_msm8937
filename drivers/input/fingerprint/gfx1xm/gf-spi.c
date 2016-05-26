@@ -864,6 +864,8 @@ static long gf_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
             if(tmp >= GF_IMAGE_MODE && tmp <= GF_KEY_MODE){
                 //gfx1xm_spi_write_byte(gfx1xm_dev, 0x8043, tmp);
                 gf_spi_write_byte(gf_dev, GF_MODE_STATUS, tmp);
+                gf_dev->mode = tmp;
+		pr_warn("goodix gfx1xm set mode for ESD:gf_dev->mode = %d\n", gf_dev->mode);
                 //pr_info("goodix gfx1xm  [FTM]:set mode:[0x8043][%d]\n", tmp);
             }
         break;
@@ -1078,7 +1080,7 @@ static void gf_timer_work(struct work_struct *work)
 
     mutex_lock(&gf_dev->fb_lock);
 
-    if ((gf_dev->isPowerOn == 0) || (gf_dev->mode == GF_FF_MODE)) {
+    if ((gf_dev->isPowerOn == 0) || (gf_dev->mode == GF_FF_MODE) || (gf_dev->mode == GF_SLEEP_MODE)) {
         goto exit;
     }
 
@@ -1349,7 +1351,6 @@ static irqreturn_t gf_irq(int irq, void* handle)
             #else
             //LINE<JIRA_ID><DATE20160319><merge from P6601>zenghaihui            
             //guomingyi add start.
-            
                 if(status == 0xb0) {
                     ftm_gfx_irq_state = 0x1; //down.
                 }

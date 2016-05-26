@@ -4,7 +4,7 @@
 
 #define NAVIGATION		0
 #define FW_UPDATE               	1
-#define ESD_PROTECT             	0
+#define ESD_PROTECT             	1
 #define CFG_UPDATE              	1
 #define GF_X16M_TARGET_FW              	1
 #define GF_316M_TARGET_CFG              	1
