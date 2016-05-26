@@ -1197,13 +1197,21 @@ static void qpnp_flash_led_work(struct work_struct *work)
 
 	if (!brightness)
 		goto turn_off;
-
+//BEGIN<20160525><modify for front camera>xiongdajun
+	#if defined(CONFIG_PROJECT_P7701) 
+	if ((led->open_fault)&&msm_sensor_is_front_camera()) {
+		dev_err(&led->spmi_dev->dev, "Open fault detected\n");
+		mutex_unlock(&led->flash_led_lock);
+		return;
+	}
+	#else
 	if (led->open_fault) {
 		dev_err(&led->spmi_dev->dev, "Open fault detected\n");
 		mutex_unlock(&led->flash_led_lock);
 		return;
 	}
-
+	#endif
+//End<20160525><modify for front camera>xiongdajun
 	if (!flash_node->flash_on && flash_node->num_regulators > 0) {
 		rc = flash_regulator_enable(led, flash_node, true);
 		if (rc) {
