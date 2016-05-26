@@ -119,7 +119,7 @@ static DECLARE_WAIT_QUEUE_HEAD(image_waiter);
 static DECLARE_WAIT_QUEUE_HEAD(msg_wq);
 static struct fasync_struct *fasync_queue = NULL;
 static struct wake_lock elan_wake_lock;
-
+static struct wake_lock elan_irq_wake_lock;
 
 /************************************** function list**************************************/
 
@@ -283,6 +283,7 @@ static irqreturn_t elan_fp_irq_handler(int irq, void *dev_id)
 {
 	elan_info("%s enter\n", __func__);
 	//elan_fp_switch_irq(0);
+	wake_lock_timeout(&elan_irq_wake_lock, 5*HZ);
 	queue_work(elan_fp->elan_fp_wq, &elan_fp->work);
 	return IRQ_HANDLED;
 }
@@ -308,6 +309,11 @@ static void elan_fp_gpio_int_config(struct elan_fp_data *fp)
 	err = request_irq(fp->elan_irq, elan_fp_irq_handler, IRQF_TRIGGER_RISING, ELAN_FP_NAME, fp);
 	if (err != 0){
 		printk("[elan error] %s: request_irq %d failed\n",__func__, fp->elan_irq);
+	}
+	
+	err = enable_irq_wake(fp->elan_irq);
+	if (err){
+		printk("[elan error] %s: enable_irq_wake %d failed\n",__func__, fp->elan_irq);
 	}
 }
 
@@ -418,7 +424,7 @@ ssize_t elan_fp_read(struct file *filp, char *buff, size_t count, loff_t *offp)
 		ret = copy_to_user(buff, elan_fp->rx_buf, count);
 	}
 	else{
-		ret = wait_event_interruptible_timeout(image_waiter, image_ok_flag!= 0, 1*HZ);
+		ret = wait_event_timeout(image_waiter, image_ok_flag!= 0, 1*HZ);
 		if ( ret != 0 ){
 			ret = copy_to_user(buff, elan_fp->image_buf, total_byte);
 			elan_info("image is readly ");
@@ -610,7 +616,7 @@ recv_one_frame_image:
 		if( (elan_interrupt_cnt == max_heigh_pix) ){
 			elan_interrupt_cnt = 0;
 			image_ok_flag = 1;
-			wake_up_interruptible(&image_waiter);
+			wake_up(&image_waiter);
 		}
 		else if(elan_work_mode & 0x04){
 			//one frame image mode
@@ -632,7 +638,7 @@ recv_one_frame_image:
     		}
 			elan_interrupt_cnt = 0;
 			image_ok_flag = 1;
-			wake_up_interruptible(&image_waiter);
+			wake_up(&image_waiter);
 		}
 	}
 	
@@ -659,7 +665,6 @@ static int elan_fp_detect_id(void)
 	memset(elan_fp->tx_buf, 0, max_width_pix);
 	cmd[0] = 0xC1;
 	elan_fp_spi_transfer(elan_fp->spi, cmd, elan_fp->rx_buf, 4);
-	elan_fp_reset();
 	
 	for(i = 0; i < 4; i++)
 		printk("%x ", elan_fp->rx_buf[i]);
@@ -668,6 +673,10 @@ static int elan_fp_detect_id(void)
 
 	if(chip_id == ELAN_CHIP_ID){
 		printk("[elan] ELAN_CHIP_ID = %x detect ok \n", chip_id);
+		cmd[0] = 0x80+0x2A;
+		cmd[1] = 0x00;
+		elan_fp_spi_transfer(elan_fp->spi, cmd, NULL, 2);
+		printk("[elan] set power down ok \n");
 		return 0;
 	}
 	else{
@@ -877,6 +886,7 @@ static int elan_fp_probe(struct spi_device *spi)
 	}
 	
 	wake_lock_init(&elan_wake_lock, WAKE_LOCK_SUSPEND, "elan_wake_lock");
+	wake_lock_init(&elan_irq_wake_lock, WAKE_LOCK_SUSPEND, "elan_irq_wake_lock");
 	printk("[elan]:++++++++++%s OK end ++++++++++++ \n", __func__);
 	
     //LINE<JIRA_ID><DATE20160316><BUG_INFO>zenghaihui
