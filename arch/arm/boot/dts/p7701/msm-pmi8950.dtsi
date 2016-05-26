@@ -619,10 +619,10 @@
 				qcom,led-name = "led:flash_1";
 				qcom,default-led-trigger =
 						"flash1_trigger";
-				qcom,max-current = <100>;   //modify current of front flash
+				qcom,max-current = <1000>;   //modify current of front flash
 				qcom,duration = <1280>;
 				qcom,id = <1>;
-				qcom,current = <100>;           //modify current of front flash
+				qcom,current = <625>;           //modify current of front flash
 			};
 
 			pmi8950_torch0: qcom,torch_0 {
@@ -640,9 +640,9 @@
 				qcom,led-name = "led:torch_1";
 				qcom,default-led-trigger =
 						"torch1_trigger";
-				qcom,max-current = <60>;        //modify current of front flash
+				qcom,max-current = <200>;        //modify current of front flash
 				qcom,id = <1>;
-				qcom,current = <60>;                //modify current of front flash
+				qcom,current = <120>;                //modify current of front flash
 			};
 
 			pmi8950_switch: qcom,switch {
