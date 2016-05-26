@@ -196,7 +196,8 @@
 			#address-cells = <1>;
 			#size-cells = <1>;
 
-			qcom,iterm-ma = <100>;
+                        //add by lishengli 20160519
+			qcom,iterm-ma = <300>;
 			qcom,float-voltage-mv = <4400>;
 			qcom,resume-delta-mv = <200>;
 			//add by lishengli
@@ -315,12 +316,16 @@
 			compatible = "qcom,qpnp-fg";
 			#address-cells = <1>;
 			#size-cells = <1>;
+			//add by lishengli 20160519 
+			qcom,hold-soc-while-full;
+			qcom,vbat-estimate-diff-mv =<40>;
 			qcom,resume-soc = <95>;
 			status = "okay";
 			qcom,bcl-lm-threshold-ma = <127>;
 			qcom,bcl-mh-threshold-ma = <405>;
 			qcom,fg-iterm-ma = <150>;
-			qcom,fg-chg-iterm-ma = <100>;
+			//add by lishengli 20160519
+			qcom,fg-chg-iterm-ma = <350>;
 			qcom,pmic-revid = <&pmi8950_revid>;
 			qcom,fg-cutoff-voltage-mv = <3400>;
 			qcom,cycle-counter-en;
