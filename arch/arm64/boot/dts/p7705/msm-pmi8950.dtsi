@@ -202,8 +202,9 @@
 			#address-cells = <1>;
 			#size-cells = <1>;
 
-			qcom,iterm-ma = <100>;
+			qcom,iterm-ma = <300>;
 			qcom,float-voltage-mv = <4400>;
+			qcom,fg-cc-cv-threshold-mv = <4390>;
 			qcom,resume-delta-mv = <200>;
 			qcom,fastchg-current-ma = <3000>;		
 			qcom,chg-inhibit-fg;
@@ -319,20 +320,22 @@
 			compatible = "qcom,qpnp-fg";
 			#address-cells = <1>;
 			#size-cells = <1>;
-			qcom,resume-soc = <95>;
+			qcom,vbat-estimate-diff-mv =<40>;
+			qcom,resume-soc = <98>;
 			status = "okay";
 			qcom,bcl-lm-threshold-ma = <127>;
 			qcom,bcl-mh-threshold-ma = <405>;
 			qcom,fg-iterm-ma = <150>;
-			qcom,fg-chg-iterm-ma = <100>;
+			qcom,fg-chg-iterm-ma = <350>;
 			qcom,pmic-revid = <&pmi8950_revid>;
-			qcom,fg-cutoff-voltage-mv = <3500>;
+			qcom,fg-cutoff-voltage-mv = <3400>;
 			qcom,cycle-counter-en;
 //Battery NTC is 3435K ,But we choose 3440K,becuse Tinno's test method  is not rigorous.
 //NTC            C1                C2              C3
 //b3440 -3.3802  86C2  0.036987   50BB -0.00381  37CF
 			qcom,thermal-coefficients =[c2 86 bb 50 cf 37];
 			qcom,capacity-learning-on;
+			qcom,hold-soc-while-full;
 		//	qcom,tinno-battery-name="itech_3000mah";
 			qcom,fg-soc@4000 {
 			status = "okay";
