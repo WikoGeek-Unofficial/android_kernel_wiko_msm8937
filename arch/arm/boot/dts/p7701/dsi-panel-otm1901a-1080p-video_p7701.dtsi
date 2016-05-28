@@ -31,9 +31,9 @@
 		qcom,mdss-dsi-h-back-porch = <45>;
 		qcom,mdss-dsi-h-pulse-width = <8>;
 		qcom,mdss-dsi-h-sync-skew = <0>;
-		qcom,mdss-dsi-v-back-porch = <16>;
-		qcom,mdss-dsi-v-front-porch = <16>;
-		qcom,mdss-dsi-v-pulse-width = <4>;
+		qcom,mdss-dsi-v-back-porch = <9>;
+		qcom,mdss-dsi-v-front-porch = <14>;
+		qcom,mdss-dsi-v-pulse-width = <1>;
 		qcom,mdss-dsi-h-left-border = <0>;
 		qcom,mdss-dsi-h-right-border = <0>;
 		qcom,mdss-dsi-v-top-border = <0>;
@@ -161,21 +161,26 @@
 		15 01 00 00 00 00 02 C4 15
 		15 01 00 00 00 00 02 00 00
 		39 01 00 00 00 00 04 FF FF FF FF
+		15 01 00 00 00 00 02 35 00
 		15 01 00 00 78 00 02 11 00 
-		15 01 00 00 32 00 02 29 00];
+		15 01 00 00 32 00 02 29 00
+		15 01 00 00 00 00 02 00 00
+		39 01 00 00 00 00 03 99 00 00];
 
-		qcom,mdss-dsi-off-command = [05 01 00 00 00 00 02 28 00
+		qcom,mdss-dsi-off-command = [15 01 00 00 00 00 02 00 00
+					39 01 00 00 00 00 03 99 95 27
+					05 01 00 00 00 00 02 28 00
 					05 01 00 00 78 00 02 10 00];
 		qcom,mdss-dsi-on-command-state = "dsi_lp_mode";
 		qcom,mdss-dsi-off-command-state = "dsi_hs_mode";
-            //Begin xiongdajun add ESD check for otm1901a
+		//add ESD check
              qcom,esd-check-enabled;
              qcom,mdss-dsi-panel-status-command = [06 01 00 01 05 00 02 0A 08];
-		qcom,mdss-dsi-panel-status-command-state = "dsi_lp_mode";
+		qcom,mdss-dsi-panel-status-command-state = "dsi_hs_mode";
 		qcom,mdss-dsi-panel-status-check-mode = "reg_read";
              qcom,mdss-dsi-panel-status-read-length = <1>;
 		qcom,mdss-dsi-panel-status-value = <0x9c>;
-              //END xiongdajun add ESD check for otm1901a
+              //END add ESD check
 		qcom,mdss-dsi-h-sync-pulse = <1>;
 		qcom,mdss-dsi-traffic-mode = "burst_mode";
 		qcom,mdss-dsi-lane-map = "lane_map_0123";

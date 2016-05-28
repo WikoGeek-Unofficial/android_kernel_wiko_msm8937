@@ -865,6 +865,8 @@ static ssize_t mmc_chipinfo_show (struct device *dev, struct device_attribute *a
    		strcpy(vendorName , "Hynix");
     else if(strnicmp((const char *)tempID, "150100", 6) == 0)		// 150100 is OEMid for Samsung 
    		strcpy(vendorName , "Samsung");
+    else if(strnicmp((const char *)tempID, "450100", 6) == 0)		// 450100 is OEMid for Sandisk 
+   		strcpy(vendorName , "Sandisk");
     else
 		strcpy(vendorName , "Unknown");
 
