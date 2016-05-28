@@ -762,6 +762,13 @@ static enum flash_area fwu_go_nogo(void)
 	if (fwu->force_update) {
 		flash_area = UI_FIRMWARE;
 		goto exit;
+	} else {
+		// TINNO: don't upgrade fw in FTM mode
+		#define STRING_BOOT_FTM_MODE "androidboot.mode=ffbm-01"
+		if (strstr(saved_command_line, STRING_BOOT_FTM_MODE)) {
+			flash_area = NONE;
+			goto exit;
+		}
 	}
 //Begin<REQ><20150409><TP update if in flash prog mode>;xiongdajun
 	retval = fwu_read_f01_device_status(&f01_device_status);
@@ -1662,6 +1669,8 @@ static int fwu_start_reflash(void)
 
 	/* reset device */
 	fwu_reset_device();
+	msleep(200);
+	fwu_scan_pdt();
 
 	/* check device status */
 	retval = fwu_read_f01_device_status(&f01_device_status);
