@@ -32,6 +32,10 @@
 
 #include <linux/switch.h>//yangliang add for ftm hph detect20150830
 
+#if defined(CONFIG_PROJECT_P7701) || defined(CONFIG_PROJECT_P7705)
+extern bool ext_spk_pa_current_state;
+#endif
+
 #define WCD_MBHC_JACK_MASK (SND_JACK_HEADSET | SND_JACK_OC_HPHL | \
 			   SND_JACK_OC_HPHR | SND_JACK_LINEOUT | \
 			   SND_JACK_MECHANICAL | SND_JACK_MICROPHONE2 | \
@@ -507,7 +511,17 @@ static void wcd_mbhc_set_and_turnoff_hph_padac(struct wcd_mbhc *mbhc)
 	} else {
 		pr_debug("%s PA is off\n", __func__);
 	}
-	WCD_MBHC_REG_UPDATE_BITS(WCD_MBHC_HPH_PA_EN, 0);
+
+	//yangliang add to feedback ext pa-spk used state for insert hph of spk-voice and out hph resulting in spk-voice no downlink 20160530
+	#if defined(CONFIG_PROJECT_P7701) || defined(CONFIG_PROJECT_P7705)
+	if(ext_spk_pa_current_state == false){
+		WCD_MBHC_REG_UPDATE_BITS(WCD_MBHC_HPH_PA_EN, 0);
+	}
+	#else
+		WCD_MBHC_REG_UPDATE_BITS(WCD_MBHC_HPH_PA_EN, 0);
+	#endif
+	//yangliang add to feedback ext pa-spk used state for insert hph of spk-voice and out hph resulting in spk-voice no downlink 20160530
+		
 	usleep_range(wg_time * 1000, wg_time * 1000 + 50);
 }
 
