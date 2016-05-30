@@ -502,7 +502,13 @@
 	//qcom,mdss-dsi-pan-enable-dynamic-fps;
 	//qcom,mdss-dsi-pan-fps-update = "dfps_immediate_porch_mode_vfp";
 };
-
+//BEGIN<REQ><20160530>add TCL panel;xiongdajun
+&dsi_nt35596h_1080p_vdo_p7701{
+	qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;
+	//qcom,mdss-dsi-pan-enable-dynamic-fps;
+	//qcom,mdss-dsi-pan-fps-update = "dfps_immediate_porch_mode_vfp";
+};
+//END<REQ><20160530>add TCL panel;xiongdajun
 //wangyanhui end 
 
 /* PM8937 GPIO configuration */
