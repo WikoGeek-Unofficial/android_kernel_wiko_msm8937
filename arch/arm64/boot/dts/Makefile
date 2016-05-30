@@ -11,6 +11,10 @@ ifeq ($(CONFIG_PROJECT_P7705),y)
 DTS_DIR := p7705
 endif
 
+ifeq ($(CONFIG_PROJECT_P7203),y)
+DTS_DIR := p7203
+endif
+
 dts-dirs += $(DTS_DIR)
 
 always		:= $(dtb-y)
