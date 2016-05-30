@@ -40,6 +40,12 @@
 const char* Tinno_battery_name;
 #endif
 
+#ifdef CONFIG_TINNO_CHARGER_CONFIG
+#define TINNO_BAT_EST_DIFF_DETECT
+#define TINNO_BAT_EST_DETECT_TIMES  3
+#define TINNO_BAT_LOW_VOLTAGE_LIMIT 3450000  // 3.5V
+#endif
+
 /* Register offsets */
 
 /* Interrupt offsets */
@@ -5671,7 +5677,10 @@ static int fg_batt_profile_init(struct fg_chip *chip)
 	const char *data, *batt_type_str;
 	bool tried_again = false, vbat_in_range, profiles_same;
 	u8 reg = 0;
-
+	#ifdef TINNO_BAT_EST_DIFF_DETECT
+	int detect_count=0;
+	union power_supply_propval tinno_system_level = {0, };
+	#endif
 wait:
 	fg_stay_awake(&chip->profile_wakeup_source);
 	ret = wait_for_completion_interruptible_timeout(&chip->batt_id_avail,
@@ -5817,8 +5826,54 @@ wait:
 		goto reschedule;
 	}
 
+#ifdef TINNO_BAT_EST_DIFF_DETECT
+	printk("FG_DATA_VOLTAGE =%d \n",fg_data[FG_DATA_VOLTAGE].value);
+	if(fg_data[FG_DATA_VOLTAGE].value>TINNO_BAT_LOW_VOLTAGE_LIMIT)
+	{
+	//set input current 0.
+			tinno_system_level.intval=3;
+			chip->batt_psy->set_property(chip->batt_psy,
+			POWER_SUPPLY_PROP_SYSTEM_TEMP_LEVEL,
+			&tinno_system_level);
+	}else {
+
+	}
+//update sram data
+	      cancel_delayed_work(&chip->update_sram_data);
+	      schedule_delayed_work(
+		&chip->update_sram_data,
+		msecs_to_jiffies(0));
+		msleep(500); 
+#endif
+
+
+
 	vbat_in_range = get_vbat_est_diff(chip)
 			< settings[FG_MEM_VBAT_EST_DIFF].value * 1000;
+
+#ifdef TINNO_BAT_EST_DIFF_DETECT
+//set input current 3000	
+	while((!vbat_in_range)&&(detect_count<TINNO_BAT_EST_DETECT_TIMES))
+	{
+			cancel_delayed_work(&chip->update_sram_data);
+			schedule_delayed_work(
+			&chip->update_sram_data,
+			msecs_to_jiffies(0));
+			msleep(1500);
+			vbat_in_range = get_vbat_est_diff(chip) < settings[FG_MEM_VBAT_EST_DIFF].value * 1000;
+			detect_count++;
+		       printk("FG_DATA_VOLTAGE=%d  FG_DATA_CPRED_VOLTAGE=%d \n",fg_data[FG_DATA_VOLTAGE].value
+				,fg_data[FG_DATA_CPRED_VOLTAGE].value);
+	
+	}
+			tinno_system_level.intval=0;	
+			chip->batt_psy->set_property(chip->batt_psy,
+			POWER_SUPPLY_PROP_SYSTEM_TEMP_LEVEL,
+			&tinno_system_level);
+#endif
+
+
+
 	profiles_same = memcmp(chip->batt_profile, data,
 					PROFILE_COMPARE_LEN) == 0;
 	if (reg & PROFILE_INTEGRITY_BIT) {
