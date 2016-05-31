@@ -207,7 +207,7 @@
 				synaptics,disable-gpios;
 		                synaptics,power-delay-ms = <160>;
 		                synaptics,reset-delay-ms = <100>;
-				synaptics,fw-image-name = "BIEL_TIF5203_S3202_PR164753_TINNO_P7701.img";
+				synaptics,fw-image-name = "YEJI_PR1723210-S3202_TINNO_P7021.img";
 				//synaptics,fw-image-name-ttouch = "";
 			};
 
