@@ -1019,3 +1019,9 @@ config PROJECT_P7203
 	help
 	  This option enables support project name
 
+config PROJECT_P7201
+	tristate "project support"
+	help
+	  This option enables support project name
+
+
