@@ -299,7 +299,11 @@ static struct usb_string mtp_string_defs[] = {
 	/* Naming interface "MTP" so libmtp will recognize us */
 	/*lijr lijr 20160419 <HHABM-289> change usb name to model name */
 	//[INTERFACE_STRING_INDEX].s	= "MTP",
+#ifdef CONFIG_PROJECT_P7705
+	[INTERFACE_STRING_INDEX].s	= "SUGAR F7",
+#else
 	[INTERFACE_STRING_INDEX].s	= "p7701",
+#endif	
 	{  },	/* end of list */
 };
 

@@ -3760,9 +3760,8 @@ static int android_bind(struct usb_composite_dev *cdev)
 
 
 #ifdef CONFIG_PROJECT_P7705
-	strlcpy(manufacturer_string, "Sugar",
-		sizeof(manufacturer_string) - 1);
-	strlcpy(product_string, "F7", sizeof(product_string) - 1);
+	strlcpy(manufacturer_string, "Sugar",sizeof(manufacturer_string) - 1);
+	strlcpy(product_string, "SUGAR F7", sizeof(product_string) - 1);
 	strlcpy(serial_string, "0123456789ABCDEF", sizeof(serial_string) - 1);
 #else
 	/* Default strings - should be updated by userspace */
