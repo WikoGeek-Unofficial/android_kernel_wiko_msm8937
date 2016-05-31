@@ -74,8 +74,9 @@ static atomic_t auxpcm_mi2s_clk_ref;
 //yangliang add for external padac for spk;20150708
 #if defined(CONFIG_PROJECT_P7701) || defined(CONFIG_PROJECT_P7705) || defined(CONFIG_PROJECT_P7203)
 int ext_spk_pa_gpio = -1;
-bool ext_spk_pa_current_state = false;//yangliang add to feedback ext pa-spk used state for insert hph of spk-voice and out hph resulting in spk-voice no downlink 20160530
 #endif
+
+bool ext_spk_pa_current_state = false;//yangliang add to feedback ext pa-spk used state for insert hph of spk-voice and out hph resulting in spk-voice no downlink 20160530
 
 static int msm8952_enable_dig_cdc_clk(struct snd_soc_codec *codec, int enable,
 					bool dapm);
@@ -252,7 +253,9 @@ int is_ext_spk_gpio_support(struct platform_device *pdev,
 
 	pdata->spk_ext_pa_gpio = of_get_named_gpio(pdev->dev.of_node,
 				spk_ext_pa, 0);
-	ext_spk_pa_gpio = pdata->spk_ext_pa_gpio;//yangliang add 
+	#if defined(CONFIG_PROJECT_P7701) || defined(CONFIG_PROJECT_P7705)
+		ext_spk_pa_gpio = pdata->spk_ext_pa_gpio;//yangliang add 
+	#endif
 
 	if (pdata->spk_ext_pa_gpio < 0) {
 		dev_dbg(&pdev->dev,
