@@ -72,7 +72,7 @@ static atomic_t quin_mi2s_clk_ref;
 static atomic_t auxpcm_mi2s_clk_ref;
 
 //yangliang add for external padac for spk;20150708
-#if defined(CONFIG_PROJECT_P7701) || defined(CONFIG_PROJECT_P7705)
+#if defined(CONFIG_PROJECT_P7701) || defined(CONFIG_PROJECT_P7705) || defined(CONFIG_PROJECT_P7203)
 int ext_spk_pa_gpio = -1;
 bool ext_spk_pa_current_state = false;//yangliang add to feedback ext pa-spk used state for insert hph of spk-voice and out hph resulting in spk-voice no downlink 20160530
 #endif
@@ -323,7 +323,7 @@ static int enable_spk_ext_pa(struct snd_soc_codec *codec, int enable)
 			return ret;
 		}*/
 		//#ifdef CONFIG_PROJECT_P7705	//external pa mode 2 TN:Peter	
-		#if defined(CONFIG_PROJECT_P7701) || defined(CONFIG_PROJECT_P7705)
+		#if defined(CONFIG_PROJECT_P7701) || defined(CONFIG_PROJECT_P7705) || defined(CONFIG_PROJECT_P7203)
 			printk(KERN_ERR"goto mode-2");
 			ext_spk_pa_current_state = true;//yangliang add to feedback ext pa-spk used state for insert hph of spk-voice and out hph resulting in spk-voice no downlink 20160530
 			//gpio_set_value_cansleep(pdata->spk_ext_pa_gpio, 0);		
@@ -3248,7 +3248,7 @@ static int msm8952_asoc_machine_remove(struct platform_device *pdev)
 	int i;
 
 	//yangliang add for external padac for spk;20150708
-	#if defined(CONFIG_PROJECT_P7701) || defined(CONFIG_PROJECT_P7705)
+	#if defined(CONFIG_PROJECT_P7701) || defined(CONFIG_PROJECT_P7705) || defined(CONFIG_PROJECT_P7203)
 	if (gpio_is_valid(ext_spk_pa_gpio))
 		gpio_free(ext_spk_pa_gpio);
 	#endif

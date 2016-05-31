@@ -354,7 +354,7 @@
 	pinctrl-1 = <&mdss_dsi_suspend &mdss_te_suspend>;
 
 	qcom,platform-te-gpio = <&tlmm 24 0>;
-	qcom,platform-enable-gpio = <&tlmm 99 0>;
+	qcom,platform-enable-gpio = <&tlmm 68 0>;
 	qcom,platform-reset-gpio = <&tlmm 60 0>;
 	qcom,platform-bklight-en-gpio = <&tlmm 98 0>;
 };
@@ -366,7 +366,7 @@
 	pinctrl-1 = <&mdss_dsi_suspend &mdss_te_suspend>;
 
 	qcom,platform-te-gpio = <&tlmm 24 0>;
-	qcom,platform-enable-gpio = <&tlmm 99 0>;
+	qcom,platform-enable-gpio = <&tlmm 68 0>;
 	qcom,platform-reset-gpio = <&tlmm 60 0>;
 	qcom,platform-bklight-en-gpio = <&tlmm 98 0>;
 };
@@ -389,6 +389,11 @@
 	//qcom,mdss-dsi-pan-fps-update = "dfps_immediate_porch_mode_vfp";
 };
 
+&dsi_nt35595_sharp_1080p_video {
+	qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;
+	//qcom,mdss-dsi-pan-enable-dynamic-fps;
+	//qcom,mdss-dsi-pan-fps-update = "dfps_immediate_porch_mode_vfp";
+};
 
 /* PM8937 GPIO configuration */
 &pm8937_gpios {
