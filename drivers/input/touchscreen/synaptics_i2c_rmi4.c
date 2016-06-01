@@ -3700,9 +3700,11 @@ static int synaptics_rmi4_gpio_configure(struct synaptics_rmi4_data *rmi4_data,
 					rmi4_data->board->reset_gpio);
 				goto err_reset_gpio_dir;
 			}
-
-			gpio_set_value(rmi4_data->board->reset_gpio, 1);
+                    //Begin<add reset><><>;xiongdajun
+			gpio_set_value(rmi4_data->board->reset_gpio, 0);
 			msleep(rmi4_data->board->reset_delay);
+                    gpio_set_value(rmi4_data->board->reset_gpio, 1);
+                    //END<add reset><><>;xiongdajun
 		} else
 			synaptics_rmi4_reset_command(rmi4_data);
 
@@ -4693,7 +4695,28 @@ static int synaptics_rmi4_suspend(struct device *dev)
       #ifdef CONFIG_SYNA_TGESTURE_FUNCTION
 	if (rmi4_data->enable_wakeup_gesture&&bEnTGesture) {
 		synaptics_rmi4_wakeup_gesture(rmi4_data, true);
-             enable_irq_wake(rmi4_data->irq); 
+             enable_irq_wake(rmi4_data->irq);
+             //Begin<add reset><><>;xiongdajun
+             if (rmi4_data->board->disable_gpios) {
+        		if (rmi4_data->ts_pinctrl) {
+        			retval = pinctrl_select_state(rmi4_data->ts_pinctrl,
+        					rmi4_data->pinctrl_state_active);
+        			if (retval < 0)
+        				dev_err(dev, "failed to select default pinctrl state\n");
+        		}
+
+        		retval = synaptics_rmi4_gpio_configure(rmi4_data, false);
+        		if (retval < 0) {
+        			dev_err(dev, "Failed to put gpios in active state\n");
+        			if (rmi4_data->ts_pinctrl) {
+                    		retval = pinctrl_select_state(rmi4_data->ts_pinctrl,
+                    					rmi4_data->pinctrl_state_active);
+                    		if (retval < 0)
+                    			dev_err(dev, "failed to select get default pinctrl state\n");
+                    	}
+        		}
+        	}
+             //END<add reset><><>;xiongdajun
 		goto exit;
 	}
       #endif
@@ -4793,6 +4816,27 @@ static int synaptics_rmi4_resume(struct device *dev)
 		synaptics_rmi4_wakeup_gesture(rmi4_data, false);
         //Line<20150902>modify for suspend current;xiongdajun
              disable_irq_wake(rmi4_data->irq);
+            //Begin<add reset><><>;xiongdajun
+        	if (rmi4_data->board->disable_gpios) {
+        		if (rmi4_data->ts_pinctrl) {
+        			retval = pinctrl_select_state(rmi4_data->ts_pinctrl,
+        					rmi4_data->pinctrl_state_active);
+        			if (retval < 0)
+        				dev_err(dev, "failed to select default pinctrl state\n");
+        		}
+
+        		retval = synaptics_rmi4_gpio_configure(rmi4_data, true);
+        		if (retval < 0) {
+        			dev_err(dev, "Failed to put gpios in active state\n");
+        				if (rmi4_data->ts_pinctrl) {
+                    		retval = pinctrl_select_state(rmi4_data->ts_pinctrl,
+                    					rmi4_data->pinctrl_state_suspend);
+                    		if (retval < 0)
+                    			pr_err("failed to select idle pinctrl state\n");
+                    	}
+        		}
+        	}
+            //END<add reset><><>;xiongdajun
 		goto exit;
 	  }
        #endif
