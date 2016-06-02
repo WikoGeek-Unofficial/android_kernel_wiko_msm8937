@@ -698,7 +698,12 @@ static int functionfs_ready_callback(struct ffs_data *ffs)
 	struct functionfs_config *config = ffs_function.config;
 
 	if (!dev)
-		return -ENODEV;
+	{
+	//modify by alik! if return value < 0 ,the ffs function will never closed.so we need return a normal value .
+		printk("functionfs_ready_callback ,dev is null!");
+		return 0;
+		//return -ENODEV;
+	}
 
 	mutex_lock(&dev->mutex);
 	config->data = ffs;
