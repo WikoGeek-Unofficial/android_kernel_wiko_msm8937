@@ -141,7 +141,7 @@
 		gpios = <&tlmm 28 0>,
 			<&tlmm 40 0>,
 			<&tlmm 39 0>,
-			<&tlmm 8 0>;
+			<&tlmm 125 0>;
 
 		qcom,gpio-reset = <1>;
 		qcom,gpio-standby = <2>;
@@ -284,7 +284,7 @@
 		//cam_vana-supply = <&pm8937_l22>;
 		cam_vio-supply = <&pm8937_l6>;
 		//cam_vaf-supply = <&pm8937_l17>;
-        qcom,cam-vreg-type = <0 0>;
+		qcom,cam-vreg-type = <0 0>;
 		qcom,cam-vreg-name = "cam_vdig", "cam_vio";
 		qcom,cam-vreg-min-voltage = <1200000 1800000>;
 		qcom,cam-vreg-max-voltage = <1200000 1800000>;
@@ -298,7 +298,7 @@
 		gpios = <&tlmm 28 0>,
 			<&tlmm 40 0>,
 			<&tlmm 39 0>,
-			<&tlmm 8 0>;
+			<&tlmm 125 0>;
 		qcom,gpio-reset = <1>;
 		qcom,gpio-standby = <2>;
 		qcom,gpio-vana = <3>;
