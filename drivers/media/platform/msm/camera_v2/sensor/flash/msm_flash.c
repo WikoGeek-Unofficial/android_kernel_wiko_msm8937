@@ -521,7 +521,7 @@ static int32_t msm_flash_low(
 			CDBG("low_flash_current[%d] = %d", i, curr);
                 //begin xiongdajun add front/near flash
                     #if defined CONFIG_LEDS_MSM_GPIO_DUAL_FLASH
-                      if(msm_sensor_is_front_camera())
+                      if(msm_sensor_is_front_camera()||flash_data->camera_id == 1)//LINE<20160601>wangyanhui add for cts test
     			    led_trigger_event(flash_ctrl->torch_trigger[1],
     				curr);
                         else
@@ -569,7 +569,7 @@ static int32_t msm_flash_high(
 			CDBG("high_flash_current[%d] = %d", i, curr);
                     //begin xiongdajun add front/near flash
                     #if defined CONFIG_LEDS_MSM_GPIO_DUAL_FLASH
-                        if(msm_sensor_is_front_camera())
+                        if(msm_sensor_is_front_camera()|| flash_data->camera_id == 1)//LINE<20160601>wangyanhui add for cts test
             			led_trigger_event(flash_ctrl->flash_trigger[1],
             				curr);
                         else
@@ -976,6 +976,7 @@ static long msm_flash_subdev_do_ioctl(
 	u32 = (struct msm_flash_cfg_data_t32 *)arg;
 
 	flash_data.cfg_type = u32->cfg_type;
+	flash_data.camera_id = u32->camera_id;//LINE<20160601>wangyanhui add for cts test
 	for (i = 0; i < MAX_LED_TRIGGERS; i++) {
 		flash_data.flash_current[i] = u32->flash_current[i];
 		flash_data.flash_duration[i] = u32->flash_duration[i];
