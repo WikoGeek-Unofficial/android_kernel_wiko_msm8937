@@ -2154,7 +2154,7 @@ static int msm8x16_wcd_hph_mode_set(struct snd_kcontrol *kcontrol,
 static int msm8x16_wcd_ext_spk_get(struct snd_kcontrol *kcontrol, 
  struct snd_ctl_elem_value *ucontrol) 
 { 
- 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol); 
+ 	struct snd_soc_codec *codec = snd_soc_kcontrol_codec(kcontrol); //HHAFMCNA-710 kernel panic TN:peter
  
 	if (current_ext_spk_pa_state == false) { 
  		ucontrol->value.integer.value[0] = 0; 
@@ -2174,7 +2174,7 @@ static int msm8x16_wcd_ext_spk_get(struct snd_kcontrol *kcontrol,
 static int msm8x16_wcd_ext_spk_set(struct snd_kcontrol *kcontrol, 
  struct snd_ctl_elem_value *ucontrol) 
 { 
-	 struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol); 
+	 struct snd_soc_codec *codec = snd_soc_kcontrol_codec(kcontrol); //HHAFMCNA-710 kernel panic TN:peter
 	 
 	 dev_dbg(codec->dev, "%s: ucontrol->value.integer.value[0] = %ld\n", 
 	 __func__, ucontrol->value.integer.value[0]); 
