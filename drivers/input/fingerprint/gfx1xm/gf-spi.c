@@ -87,6 +87,7 @@ static DECLARE_BITMAP(minors, N_SPI_MINORS);
 #define SPI_DEBUG       (0x1<<2)
 #define TIME_DEBUG      (0x1<<3)
 #define FLOW_DEBUG      (0x1<<4)
+	
 #define gf_debug(level, fmt, args...) do{ \
     if(/*g_debug & level*/1) {\
 	pr_info("goodix gfx1xm  " fmt, ##args); \
@@ -151,7 +152,12 @@ static unsigned char g_mode_switch_flag = 0;
 int g_fp_match_flag = 0;
 EXPORT_SYMBOL_GPL(g_fp_match_flag);
 
-static int suspend_test_flag = 0;	
+static int suspend_test_flag = 0;
+//add by yinglong.tang
+#define SCREEN_ON 1
+#define SCREEN_OFF 0
+static int gf_screen_status = SCREEN_ON;
+//add by yinglong.tang
 
 #define GF_PID_LEN 	6
 
@@ -193,6 +199,59 @@ unsigned char* cfg = GF_CFG;
 struct wake_lock fg_wake_lock;
 module_param(bufsiz, uint, S_IRUGO);
 MODULE_PARM_DESC(bufsiz, "data bytes in biggest supported SPI message");
+
+//add by yinglong.tang
+#if defined(CONFIG_FB)
+static int fb_notifier_callback(struct notifier_block *self,
+				unsigned long event, void *data);
+
+static void gf_configure_sleep(struct gf_dev *gf_dev_fb)
+{
+	int retval = 0;
+
+	gf_dev_fb->notifier.notifier_call = fb_notifier_callback;
+
+	retval = fb_register_client(&gf_dev_fb->notifier);
+	if (retval)
+		dev_err(&gf_dev_fb->spi->dev,
+			"Unable to register notifier: %d\n", retval);
+}
+
+static int gf_suspend_fb(void) {
+	printk(" goodix gfx1xm  %s======SCREEN_OFF=========.\n", __func__);
+	gf_screen_status = SCREEN_OFF;
+	return 0;
+}
+static int gf_resume_fb(void) {
+	printk(" goodix gfx1xm  %s======SCREEN_ON=========.\n", __func__);
+	gf_screen_status = SCREEN_ON;
+	return 0;
+}
+
+static int fb_notifier_callback(struct notifier_block *self,
+				unsigned long event, void *data)
+{
+	struct fb_event *evdata = data;
+	int *blank;
+	struct gf_dev *gf_dev_fb =
+		container_of(self, struct gf_dev, notifier);
+
+	if (evdata && evdata->data && gf_dev_fb && gf_dev_fb->spi) {
+             if (event == FB_EVENT_BLANK) {
+			blank = evdata->data;
+			if (*blank == FB_BLANK_UNBLANK)
+				gf_resume_fb();
+			else if (*blank == FB_BLANK_POWERDOWN)
+				gf_suspend_fb() ;
+		}
+	}
+
+	return 0;
+}
+
+#endif
+//add by yinglong.tang
+
 
 
 void print_16hex(u8 *config, u8 len)
@@ -1080,6 +1139,13 @@ static void gf_timer_work(struct work_struct *work)
 
     mutex_lock(&gf_dev->fb_lock);
 
+    //add by yinglong.tang
+    if (gf_screen_status == SCREEN_OFF) {
+        printk("goodix gfx1xm  [info] %s :gf_screen_status == SCREEN_OFF exit.\n",__func__);
+        goto exit;
+    }
+    //add by yinglong.tang
+
     if ((gf_dev->isPowerOn == 0) || (gf_dev->mode == GF_FF_MODE) || (gf_dev->mode == GF_SLEEP_MODE)) {
         goto exit;
     }
@@ -1089,7 +1155,12 @@ static void gf_timer_work(struct work_struct *work)
         goto exit;
     }
 
-   
+    //add by yinglong.tang
+    if(suspend_test_flag == 1) {
+        pr_info("goodix gfx1xm  [info] %s :suspend_test_flag =1\n",__func__);
+        goto exit;
+    } 
+    //add by yinglong.tang
 
     mutex_lock(&gf_dev->buf_lock);
     ret = power_supply_is_system_supplied();
@@ -1114,7 +1185,7 @@ static void gf_timer_work(struct work_struct *work)
 	    gf_spi_write_byte(gf_dev, 0x8040, 0xAA);
 	    mdelay(1);
 	}else{
-	    pr_info("goodix gfx1xm  ##Jason hardware works abnormal,do reset! 0x8040=0x%x 0x8000=0x%x 0x8046=0x%x\n"
+	    printk(KERN_ERR"goodix gfx1xm  ##Jason hardware works abnormal,do reset! 0x8040=0x%x 0x8000=0x%x 0x8046=0x%x\n"
 			,value[0],value[1],value[2]);
 	    disable_irq(gf_dev->spi->irq);
 	    gf_hw_reset(gf_dev);
@@ -1126,7 +1197,7 @@ static void gf_timer_work(struct work_struct *work)
                 gf_spi_read_byte(gf_dev, 0x8000, &value[0]);
                 if(value[0] != 0x47) {
 		    /***********************************firmware update*********************************/
-		    pr_info("goodix gfx1xm  [info] %s firmware update start\n", __func__);
+		    printk(KERN_ERR"goodix gfx1xm  [info] %s firmware update start\n", __func__);
 		    del_timer_sync(&gf_dev->gf_timer);
 		    if(gf_fw_update_init(gf_dev)) {
 			gf_fw_update(gf_dev, p_fw, FW_LENGTH);
@@ -1723,6 +1794,11 @@ static int gf_probe(struct spi_device *spi)
     //LINE<JIRA_ID><DATE20160316><BUG_INFO>zenghaihui
     g_fp_match_flag = 1;
 
+    //add by yinglong.tang	
+    #if defined(CONFIG_FB)
+    gf_configure_sleep(gf_dev);
+    #endif
+    //add by yinglong.tang
     full_fp_chip_name(DEV_NAME);//add by yinglong.tang.
     
     FUNC_EXIT();
