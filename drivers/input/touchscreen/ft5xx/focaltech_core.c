@@ -1059,7 +1059,17 @@ int fts_ts_suspend(struct device *dev)
 #ifdef CONFIG_FT5XX_TGESTURE_FUNCTION
 #if FTS_GESTRUE_EN
         int error = 0;
+        int i = 0;  //Line<BUG><HHABM-854><Release All touch>;xiongdajun
 if (bEnTGesture) {
+    //Begin<BUG><HHABM-854><Release All touch>;xiongdajun
+     for (i = 0; i < data->pdata->num_max_touches; i++)
+         {
+                   input_mt_slot(data->input_dev, i);
+                   input_mt_report_slot_state(data->input_dev, MT_TOOL_FINGER, 0);
+         }
+         input_mt_report_pointer_emulation(data->input_dev, false);
+         input_sync(data->input_dev);
+//END<BUG><HHABM-854><Release All touch>;xiongdajun
          fts_write_reg(fts_i2c_client, 0xd0, 0x01);
 	  if (fts_updateinfo_curr.CHIP_ID==0x54 || fts_updateinfo_curr.CHIP_ID==0x58 || fts_updateinfo_curr.CHIP_ID==0x86)
 	  {
