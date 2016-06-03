@@ -16,6 +16,7 @@
 	qcom,model = "msm8952-snd-card-mtp";
 	//wangyanhui modify start
 	qcom,msm-mbhc-hphl-swh = <1>;
+	qcom,msm-mbhc-gnd-swh = <1>;//yangliang add for no-hph
 	qcom,msm-hs-micbias-type = "internal";
 	qcom,msm-spk-ext-pa = <&tlmm 126 0>;
 	//wangyanhui modify end
