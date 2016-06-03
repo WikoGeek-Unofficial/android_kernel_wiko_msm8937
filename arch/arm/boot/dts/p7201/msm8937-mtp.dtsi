@@ -103,6 +103,12 @@
 	qcom,actuator-type = "erm";//lra //wangyanhui set erm
 };
 
+//wangyanhui add for front flightlight start 
+&flash_led{
+	qcom,front_flash_gpio_mode=<&tlmm 12 0x00>;
+	qcom,front_flash_gpio_en=<&tlmm 13 0x00>;
+};
+//wangyanhui add for front flightlight end
 
 //&spi_3 { /* BLSP1 QUP3 */  //delete spi3
 	/*maxim_sti@0 {
