@@ -3511,13 +3511,25 @@ static ssize_t enable_store(struct device *pdev, struct device_attribute *attr,
 						"audio_source", 12))
 					audio_enabled = true;
 			}
+		
 		if (audio_enabled)
 			msleep(100);
-		err = android_enable(dev);
+
+
+			err = android_enable(dev);
+		
 		if (err < 0) {
 			pr_err("%s: android_enable failed\n", __func__);
-			dev->connected = 0;
-			dev->enabled = true;
+			dev->connected = 0;		
+//add by alik		
+	              list_for_each_entry(conf, &dev->configs, list_item)
+				list_for_each_entry(f_holder, &conf->enabled_functions,
+							enabled_list) {
+					if (f_holder->f->disable)
+						f_holder->f->disable(f_holder->f);
+				}
+//add end
+				dev->enabled = false;
 			mutex_unlock(&dev->mutex);
 			return size;
 		}
