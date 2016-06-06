@@ -1085,7 +1085,21 @@ if (bEnTGesture) {
 			dev_err(&data->client->dev,
 				"%s: set_irq_wake failed\n", __func__);
 	data->suspended = true;
-	
+      //<Begin>add reset when open GESTRUE;xiongdajun
+	error = fts_gpio_configure(data, false);
+	if (error < 0) {
+		dev_err(dev,
+			"Failed to configure the gpios\n");
+		#ifdef MSM_NEW_VER
+            	if (data->ts_pinctrl) {
+            		error = pinctrl_select_state(data->ts_pinctrl,
+            					data->pinctrl_state_active);
+            		if (error < 0)
+            			dev_err(dev, "Cannot get active pinctrl state\n");
+            	}
+            	#endif
+	}
+        //<End>add reset when open GESTRUE;xiongdajun
        return 0;
 }
 #endif
@@ -1166,6 +1180,21 @@ if (bEnTGesture) {
         	gpio_set_value_cansleep(data->pdata->reset_gpio, 1);
         }
 		data->suspended = false;
+            //<Begin>add reset when open GESTRUE;xiongdajun
+            	err = fts_gpio_configure(data, true);
+        	if (err < 0) {
+        		dev_err(dev,
+        			"Failed to configure the gpios\n");
+        		#ifdef MSM_NEW_VER
+                    	if (data->ts_pinctrl) {
+                    		err = pinctrl_select_state(data->ts_pinctrl,
+                    					data->pinctrl_state_active);
+                    		if (err < 0)
+                    			dev_err(dev, "Cannot get active pinctrl state\n");
+                    	}
+                    	#endif
+        	}
+            //<End>add reset when open GESTRUE;xiongdajun
             return 0;
 }
 #endif
