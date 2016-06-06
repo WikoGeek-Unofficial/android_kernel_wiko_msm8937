@@ -2201,9 +2201,11 @@ static int get_prop_capacity(struct fg_chip *chip)
 	} else if (msoc == FULL_SOC_RAW) {
 		return FULL_CAPACITY;
 	}
+//modiy by alik
+//	return DIV_ROUND_CLOSEST((msoc - 1) * (FULL_CAPACITY - 2),
+//			FULL_SOC_RAW - 2) + 1;
 
-	return DIV_ROUND_CLOSEST((msoc - 1) * (FULL_CAPACITY - 2),
-			FULL_SOC_RAW - 2) + 1;
+	return DIV_ROUND_CLOSEST((msoc - 1) * (FULL_CAPACITY - 1),FULL_SOC_RAW - 2) + 1;
 }
 
 #define HIGH_BIAS	3
@@ -6537,7 +6539,7 @@ static int fg_of_init(struct fg_chip *chip)
 			else
 				pr_info("Using default sense\n");
 		}
-	} else {
+	} else {  
 		rc = 0;
 	}
 

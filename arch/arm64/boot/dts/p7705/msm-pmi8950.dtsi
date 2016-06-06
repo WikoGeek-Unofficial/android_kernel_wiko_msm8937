@@ -218,6 +218,7 @@
 			qcom,force-aicl-rerun;
 			qcom,aicl-rerun-period-s = <180>;
 			qcom,autoadjust-vfloat;
+			qcom,ext-sense-type;
 			qcom,float-voltage-comp = <13>; //4100v
 			qcom,fastchg-current-comp = <900>; //900ma
 			qcom,chgr@1000 {
@@ -325,8 +326,8 @@
 			status = "okay";
 			qcom,bcl-lm-threshold-ma = <127>;
 			qcom,bcl-mh-threshold-ma = <405>;
-			qcom,fg-iterm-ma = <150>;
-			qcom,fg-chg-iterm-ma = <350>;
+			qcom,fg-iterm-ma = <300>;
+			qcom,fg-chg-iterm-ma = <250>;
 			qcom,pmic-revid = <&pmi8950_revid>;
 			qcom,fg-cutoff-voltage-mv = <3400>;
 			qcom,cycle-counter-en;
