@@ -199,6 +199,7 @@
                         //add by lishengli 20160519
 			qcom,iterm-ma = <300>;
 			qcom,float-voltage-mv = <4400>;
+			qcom,fg-cc-cv-threshold-mv = <4390>;
 			qcom,resume-delta-mv = <200>;
 			//add by lishengli
 			qcom,fastchg-current-ma = <3000>;		
@@ -323,9 +324,10 @@
 			status = "okay";
 			qcom,bcl-lm-threshold-ma = <127>;
 			qcom,bcl-mh-threshold-ma = <405>;
-			qcom,fg-iterm-ma = <150>;
+			//add by lishengli 20160519   fixed can't charge to full
+			qcom,fg-iterm-ma = <300>;
 			//add by lishengli 20160519
-			qcom,fg-chg-iterm-ma = <350>;
+			qcom,fg-chg-iterm-ma = <250>;
 			qcom,pmic-revid = <&pmi8950_revid>;
 			qcom,fg-cutoff-voltage-mv = <3400>;
 			qcom,cycle-counter-en;
