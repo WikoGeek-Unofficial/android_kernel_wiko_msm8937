@@ -2158,8 +2158,10 @@ static int get_prop_capacity(struct fg_chip *chip)
 	if (chip->use_last_soc && chip->last_soc) {
 		if (chip->last_soc == FULL_SOC_RAW)
 			return FULL_CAPACITY;
+//modify by alik		
+printk("get_prop_capacity 1 !\n");
 		return DIV_ROUND_CLOSEST((chip->last_soc - 1) *
-				(FULL_CAPACITY - 2),
+				(FULL_CAPACITY - 1),
 				FULL_SOC_RAW - 2) + 1;
 	}
 
@@ -2171,6 +2173,10 @@ static int get_prop_capacity(struct fg_chip *chip)
 
 	if (chip->charge_full)
 		return FULL_CAPACITY;
+
+printk("get_prop_capacity 2 !\n");
+
+
 
 	if (chip->soc_empty) {
 		if (fg_debug_mask & FG_POWER_SUPPLY)
@@ -3249,6 +3255,7 @@ static int fg_power_get_property(struct power_supply *psy,
 		break;
 	case POWER_SUPPLY_PROP_CAPACITY:
 		val->intval = get_prop_capacity(chip);
+		printk("POWER_SUPPLY_PROP_CAPACITY  read soc= %d  \n",val->intval );
 		break;
 	case POWER_SUPPLY_PROP_CAPACITY_RAW:
 		val->intval = get_sram_prop_now(chip, FG_DATA_BATT_SOC);
@@ -6123,9 +6130,12 @@ static void charge_full_work(struct work_struct *work)
 		pr_err("Unable to read battery soc: %d\n", rc);
 		goto out;
 	}
-	if (buffer[2] <= resume_soc_raw) {
+// modify by alik ,if the battery soc raw <resume soc raw ,it must in recharging  process.
+	if (buffer[2] <= (resume_soc_raw-4)) {
 		if (fg_debug_mask & FG_STATUS)
 			pr_info("bsoc = 0x%02x <= resume = 0x%02x\n",
+					buffer[2], resume_soc_raw);
+		printk("charge_full_work bsoc = 0x%02x <= resume = 0x%02x\n",
 					buffer[2], resume_soc_raw);
 		disable = true;
 	}
@@ -6160,8 +6170,10 @@ static void charge_full_work(struct work_struct *work)
 	fg_mem_read(chip, &reg, PROFILE_INTEGRITY_REG, 1, 0, 0);
 out:
 	fg_mem_release(chip);
-	if (disable)
+	if (disable){
+		printk("charge_full_work set charge_full false!\n");
 		chip->charge_full = false;
+		}
 }
 
 static void update_bcl_thresholds(struct fg_chip *chip)
@@ -7374,7 +7386,7 @@ static int fg_common_hw_init(struct fg_chip *chip)
 	}
 
 	rc = fg_mem_masked_write(chip, settings[FG_MEM_DELTA_SOC].address, 0xFF,
-			soc_to_setpoint(settings[FG_MEM_DELTA_SOC].value),
+			soc_to_setpoint(settings[FG_MEM_DELTA_SOC].value)-1,
 			settings[FG_MEM_DELTA_SOC].offset);
 	if (rc) {
 		pr_err("failed to write delta soc rc=%d\n", rc);
