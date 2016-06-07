@@ -134,7 +134,7 @@ static unsigned char CTPM_FW[] = {
 
 #ifdef CONFIG_PROJECT_P7701
 	#include "ft5436_fw_app_p7701.i"
-#elif defined(CONFIG_PROJECT_P7201)
+#elif defined(CONFIG_PROJECT_P7201)||defined(CONFIG_PROJECT_P7203)
 	#include "FT5346_BOEN_TL_app_p7201.i"
 #else
 	#include "FT_Upgrade_App.i"
