@@ -532,7 +532,7 @@ static int32_t msm_flash_low(
 	                      if((msm_sensor_is_front_camera()||flash_data->camera_id == 1))
 	    			    led_trigger_event(flash_ctrl->torch_trigger[2],
 	    				curr);
-	                        else
+	                        else if(i < 2)
 	                            led_trigger_event(flash_ctrl->torch_trigger[i],
 	    				curr);
 			//END<20160601>wangyanhui add for front flash				
@@ -575,7 +575,7 @@ static int32_t msm_flash_high(
 				pr_debug("LED flash_current[%d] clamped %d\n",
 					i, curr);
 			}
-			CDBG("high_flash_current[%d] = %d", i, curr);
+			CDBG("high_flash_current[%d] = %d  flash_data->camera_id = %d", i, curr , flash_data->camera_id );
                     //begin xiongdajun add front/near flash
                     #if defined CONFIG_LEDS_MSM_GPIO_DUAL_FLASH
                         if((msm_sensor_is_front_camera()|| flash_data->camera_id == 1))//LINE<20160601>wangyanhui add for cts test
@@ -589,7 +589,7 @@ static int32_t msm_flash_high(
                         if((msm_sensor_is_front_camera()|| flash_data->camera_id == 1))
             			led_trigger_event(flash_ctrl->flash_trigger[2],
             				curr);
-                        else
+                        else if(i < 2)
                                 led_trigger_event(flash_ctrl->flash_trigger[i],
             				curr);
 			//END<20160601>wangyanhui add for front flash 			
