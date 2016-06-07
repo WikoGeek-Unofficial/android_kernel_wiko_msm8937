@@ -4575,7 +4575,7 @@ static void synaptics_rmi4_f11_wg(struct synaptics_rmi4_data *rmi4_data,
 	unsigned char reporting_control;
 	struct synaptics_rmi4_fn *fhandler;
 	struct synaptics_rmi4_device_info *rmi;
-
+       int i;  //LINE<Release all points when open tgesture><><>;xiongdajun
 	rmi = &(rmi4_data->rmi4_mod_info);
 
 	list_for_each_entry(fhandler, &rmi->support_fn_list, link) {
@@ -4610,7 +4610,18 @@ static void synaptics_rmi4_f11_wg(struct synaptics_rmi4_data *rmi4_data,
 				__func__);
 		return;
 	}
-
+ //Begin<Release all points when open tgesture><><>;xiongdajun
+ for (i = 0; i < fhandler->num_of_data_points; i++)
+         {
+         #ifdef TYPE_B_PROTOCOL
+		input_mt_slot(rmi4_data->input_dev, i);
+		input_mt_report_slot_state(rmi4_data->input_dev,
+				MT_TOOL_FINGER, 0);
+        #endif
+         }
+	input_mt_report_pointer_emulation(rmi4_data->input_dev, false);
+	input_sync(rmi4_data->input_dev);
+//End<Release all points when open tgesture><><>;xiongdajun
 	return;
 }
 
@@ -4623,7 +4634,7 @@ static void synaptics_rmi4_f12_wg(struct synaptics_rmi4_data *rmi4_data,
 	struct synaptics_rmi4_f12_extra_data *extra_data;
 	struct synaptics_rmi4_fn *fhandler;
 	struct synaptics_rmi4_device_info *rmi;
-
+       int i;    //Line<Release all points when open tgesture><><>;xiongdajun
 	rmi = &(rmi4_data->rmi4_mod_info);
 
 	list_for_each_entry(fhandler, &rmi->support_fn_list, link) {
@@ -4660,7 +4671,18 @@ static void synaptics_rmi4_f12_wg(struct synaptics_rmi4_data *rmi4_data,
 				__func__);
 		return;
 	}
-
+    //Begin<Release all points when open tgesture><><>;xiongdajun
+    for (i = 0; i < fhandler->num_of_data_points; i++)
+         {
+         #ifdef TYPE_B_PROTOCOL
+		input_mt_slot(rmi4_data->input_dev, i);
+		input_mt_report_slot_state(rmi4_data->input_dev,
+				MT_TOOL_FINGER, 0);
+        #endif
+         }
+	input_mt_report_pointer_emulation(rmi4_data->input_dev, false);
+	input_sync(rmi4_data->input_dev);
+    //End<Release all points when open tgesture><><>;xiongdajun
 	return;
 }
 
