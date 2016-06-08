@@ -70,6 +70,8 @@
 #include "f_gsi.c"
 #include "f_mass_storage.h"
 
+#include "android.h"
+
 USB_ETHERNET_MODULE_PARAMETERS();
 #include "debug.h"
 
@@ -3835,9 +3837,9 @@ static int android_bind(struct usb_composite_dev *cdev)
 #else
 	/* Default strings - should be updated by userspace */
 	/*lijr lijr 20160419 <HHABM-289> change usb name to model name */
-	strlcpy(manufacturer_string, "p7701",
+	strlcpy(manufacturer_string, MANUFACTURER_STRING,
 		sizeof(manufacturer_string) - 1);
-	strlcpy(product_string, "p7701", sizeof(product_string) - 1);
+	strlcpy(product_string, PRODUCT_STRING, sizeof(product_string) - 1);
 	strlcpy(serial_string, "0123456789ABCDEF", sizeof(serial_string) - 1);
 #endif
 	id = usb_string_id(cdev);

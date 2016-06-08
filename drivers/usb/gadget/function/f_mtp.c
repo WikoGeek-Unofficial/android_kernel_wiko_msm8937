@@ -40,6 +40,7 @@
 #include <linux/configfs.h>
 #include <linux/usb/composite.h>
 
+#include "f_mtp2.h"
 #include "configfs.h"
 
 #define MTP_RX_BUFFER_INIT_SIZE    1048576
@@ -302,7 +303,7 @@ static struct usb_string mtp_string_defs[] = {
 #ifdef CONFIG_PROJECT_P7705
 	[INTERFACE_STRING_INDEX].s	= "SUGAR F7",
 #else
-	[INTERFACE_STRING_INDEX].s	= "p7701",
+	[INTERFACE_STRING_INDEX].s	= MTP_NAME,
 #endif	
 	{  },	/* end of list */
 };
