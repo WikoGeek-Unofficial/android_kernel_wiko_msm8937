@@ -331,6 +331,7 @@
 			qcom,pmic-revid = <&pmi8950_revid>;
 			qcom,fg-cutoff-voltage-mv = <3400>;
 			qcom,cycle-counter-en;
+			qcom,ext-sense-type;
 
 			//add by lishengli for 3430    20160412
 			qcom,thermal-coefficients =[c8 86 c1 50 d3 37];
