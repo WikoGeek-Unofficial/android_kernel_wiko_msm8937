@@ -228,7 +228,7 @@ int msm_sensor_match_id(struct msm_sensor_ctrl_t *s_ctrl)
     #endif
 
     //BEGIN<20160602><add camera otp>wangyanhui add 	
-    #if 0//def CONFIG_PROJECT_P7201
+    #ifdef CONFIG_PROJECT_P7201
        uint16_t mid = 0;
        uint16_t flag = 0;
     #endif
@@ -412,14 +412,15 @@ int msm_sensor_match_id(struct msm_sensor_ctrl_t *s_ctrl)
 #endif
 
 //BEGIN<20160602><add camera otp>wangyanhui add 
-#if 0//def CONFIG_PROJECT_P7201
+#ifdef CONFIG_PROJECT_P7201
         pr_err("%s: sensor_name is %s\n", __func__, sensor_name);
         if((!strncmp(s_ctrl->sensordata->sensor_name, "imx258_guangbao_p7201", sizeof("imx258_guangbao_p7201"))))
         {
-             //rc = sensor_i2c_client->i2c_func_tbl->i2c_write(
-        				//sensor_i2c_client, 0x0100,
-        				//0x01, MSM_CAMERA_I2C_BYTE_DATA);
-             rc = sensor_i2c_client->i2c_func_tbl->i2c_write(
+		unsigned short addr_temp = 0;
+		addr_temp = sensor_i2c_client->cci_client->sid;
+		sensor_i2c_client->cci_client->sid = 0xA0>>1;
+		
+            /* rc = sensor_i2c_client->i2c_func_tbl->i2c_write(
         				sensor_i2c_client, 0x0A02,
         				0x0F, MSM_CAMERA_I2C_BYTE_DATA);
              rc = sensor_i2c_client->i2c_func_tbl->i2c_write(
@@ -428,24 +429,13 @@ int msm_sensor_match_id(struct msm_sensor_ctrl_t *s_ctrl)
              msleep(20);
             rc = sensor_i2c_client->i2c_func_tbl->i2c_read(
         		sensor_i2c_client, 0x0A01,
-        		&flag, MSM_CAMERA_I2C_BYTE_DATA);
-            pr_err("%s: flag is %d  LINE--%d\n", __func__, flag,__LINE__);
-            if(flag == 0x01)
-                {
-                 int i = 0;
-                for(i=0; i <10 ; i ++)
-                {		
-                rc = sensor_i2c_client->i2c_func_tbl->i2c_read(
-            		sensor_i2c_client, i,
-            		&mid, MSM_CAMERA_I2C_BYTE_DATA);
-                pr_err("%s: mid is %d\n", __func__, mid);
-                }
+        		&flag, MSM_CAMERA_I2C_BYTE_DATA);*/
+            //pr_err("%s: flag is %d  LINE--%d\n", __func__, flag,__LINE__);
 
-            }
-            else
-            {
-            		return -ENODEV;
-            }
+            rc = sensor_i2c_client->i2c_func_tbl->i2c_read(
+            		sensor_i2c_client, 0x03,
+            		&mid, MSM_CAMERA_I2C_BYTE_DATA);
+            pr_err("%s: mid is   %d \n", __func__ , mid);
  
 
             if(mid == 0x03)
@@ -453,26 +443,33 @@ int msm_sensor_match_id(struct msm_sensor_ctrl_t *s_ctrl)
             else
             		return -ENODEV;
 
-            rc = sensor_i2c_client->i2c_func_tbl->i2c_write(
+            /*rc = sensor_i2c_client->i2c_func_tbl->i2c_write(
         				sensor_i2c_client, 0x0A00,
-        				0x00, MSM_CAMERA_I2C_BYTE_DATA);
-		msleep(10);
+        				0x00, MSM_CAMERA_I2C_BYTE_DATA);*/
+			
+            sensor_i2c_client->cci_client->sid = addr_temp;
+            msleep(10);
 
         } 
 
         if((!strncmp(s_ctrl->sensordata->sensor_name, "imx258_sunny_p7201", sizeof("imx258_sunny_p7201"))))
         {
-            rc = sensor_i2c_client->i2c_func_tbl->i2c_read(
+		unsigned short addr_temp = 0;
+		addr_temp = sensor_i2c_client->cci_client->sid;
+		sensor_i2c_client->cci_client->sid = 0xA0 >>1;
+
+		rc = sensor_i2c_client->i2c_func_tbl->i2c_read(
         		sensor_i2c_client, 0x00,
         		&flag, MSM_CAMERA_I2C_BYTE_DATA);
 			 
             pr_err("%s: flag is %d  LINE--%d\n", __func__, flag,__LINE__);
             if(flag == 0x01)
-                {
+            {
+
                 rc = sensor_i2c_client->i2c_func_tbl->i2c_read(
             		sensor_i2c_client, 0x01,
             		&mid, MSM_CAMERA_I2C_BYTE_DATA);
-                pr_err("%s: mid is %d\n", __func__, mid);
+                pr_err("%s: mid is  %d\n", __func__, mid);
 
             }
             else
@@ -485,8 +482,9 @@ int msm_sensor_match_id(struct msm_sensor_ctrl_t *s_ctrl)
                        pr_err("mid of camera is imx258_sunny_p7201 \n");
             else
                         return -ENODEV;
-			
-		msleep(10);
+
+            sensor_i2c_client->cci_client->sid = addr_temp;			
+            msleep(10);
 
         } 		
 #endif
