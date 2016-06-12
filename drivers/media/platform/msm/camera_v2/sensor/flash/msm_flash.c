@@ -955,8 +955,11 @@ static int32_t msm_flash_get_dt_data(struct device_node *of_node,
 		return rc;
 	}
 
+#ifdef CONFIG_PROJECT_P7701 //MYOSC-710.前后闪光灯都设置为长亮，切换前后置摄像头，有时前置闪光灯不亮.wupingzhou,20160611.
+#else
 	if (fctrl->flash_driver_type == FLASH_DRIVER_DEFAULT)
 		fctrl->flash_driver_type = FLASH_DRIVER_GPIO;
+#endif
 	CDBG("%s:%d fctrl->flash_driver_type = %d", __func__, __LINE__,
 		fctrl->flash_driver_type);
 
