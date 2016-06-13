@@ -1024,4 +1024,6 @@ config PROJECT_P7201
 	help
 	  This option enables support project name
 
-
+config TINNO_ROOT_PROTECT
+bool "for tinno root protect "
+default n
