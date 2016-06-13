@@ -73,6 +73,8 @@
 USB_ETHERNET_MODULE_PARAMETERS();
 #include "debug.h"
 
+int tinno_usb_sync_flag=0;
+
 MODULE_AUTHOR("Mike Lockwood");
 MODULE_DESCRIPTION("Android Composite USB Driver");
 MODULE_LICENSE("GPL");
@@ -494,7 +496,7 @@ static int android_enable(struct android_dev *dev)
 	struct android_configuration *conf;
 	ktime_t diff;
 	int err = 0;
-
+	printk("android_enable depth=%d \n",dev->disable_depth);
 	if (WARN_ON(!dev->disable_depth))
 		return err;
 
@@ -506,6 +508,10 @@ static int android_enable(struct android_dev *dev)
 			if (err < 0) {
 				pr_err("%s: usb_add_config failed : err: %d\n",
 						__func__, err);
+
+				dev->disable_depth++;
+				list_for_each_entry(conf, &dev->configs, list_item)
+				usb_remove_config(cdev, &conf->usb_config);
 				return err;
 			}
 		}
@@ -530,7 +536,7 @@ static void android_disable(struct android_dev *dev)
 {
 	struct usb_composite_dev *cdev = dev->cdev;
 	struct android_configuration *conf;
-
+	printk("android_disable depth=%d \n",dev->disable_depth);
 	if (dev->disable_depth++ == 0) {
 		/* Cancel pending control requests */
 		usb_ep_dequeue(cdev->gadget->ep0, cdev->req);
@@ -555,6 +561,9 @@ struct functionfs_config {
 
 static int functionfs_ready_callback(struct ffs_data *ffs);
 static void functionfs_closed_callback(struct ffs_data *ffs);
+
+static int ffs_android_disable_flag=0;
+static int ffs_android_disable_flag_1=0;
 
 static int ffs_function_init(struct android_usb_function *f,
 			     struct usb_composite_dev *cdev)
@@ -593,12 +602,21 @@ static void ffs_function_enable(struct android_usb_function *f)
 {
 	struct android_dev *dev = f->android_dev;
 	struct functionfs_config *config = f->config;
-
 	config->enabled = true;
 
+#if 1
 	/* Disable the gadget until the function is ready */
 	if (!config->opened)
-		android_disable(dev);
+	{
+			if(tinno_usb_sync_flag==0)
+			{
+				android_disable(dev);
+				ffs_android_disable_flag=1;
+			}else{
+				printk("the adbd process was abnormal  don't disable android .!\n ");
+			}
+	}
+#endif	
 }
 
 static void ffs_function_disable(struct android_usb_function *f)
@@ -607,10 +625,17 @@ static void ffs_function_disable(struct android_usb_function *f)
 	struct functionfs_config *config = f->config;
 
 	config->enabled = false;
-
+#if 1
 	/* Balance the disable that was called in closed_callback */
 	if (!config->opened)
-		android_enable(dev);
+	{
+		if(ffs_android_disable_flag_1==1)
+		{
+			android_enable(dev);
+		}
+	}
+	ffs_android_disable_flag_1=0;
+#endif	
 }
 
 static int ffs_function_bind_config(struct android_usb_function *f,
@@ -692,6 +717,7 @@ static struct android_usb_function ffs_function = {
 	.attributes	= ffs_function_attributes,
 };
 
+
 static int functionfs_ready_callback(struct ffs_data *ffs)
 {
 	struct android_dev *dev = ffs_function.android_dev;
@@ -710,8 +736,17 @@ static int functionfs_ready_callback(struct ffs_data *ffs)
 	config->opened = true;
 
 	if (config->enabled && dev)
-		android_enable(dev);
-
+	{
+		if(ffs_android_disable_flag==1)
+		{
+			android_enable(dev);
+			ffs_android_disable_flag=0;
+		}else if(ffs_android_disable_flag_1==1)
+		{
+			android_enable(dev);
+			ffs_android_disable_flag_1=0;
+		}
+	}
 	mutex_unlock(&dev->mutex);
 	return 0;
 }
@@ -725,8 +760,14 @@ static void functionfs_closed_callback(struct ffs_data *ffs)
 		mutex_lock(&dev->mutex);
 
 	if (config->enabled && dev)
-		android_disable(dev);
-
+	{
+		printk("never disable usb!!\n");
+		if(dev->disable_depth==0) //if android has not disabled,we shuold disable the android.
+		{
+			android_disable(dev);
+			ffs_android_disable_flag_1=1;
+		}
+	}
 	config->opened = false;
 	config->data = NULL;
 
@@ -3514,8 +3555,7 @@ static ssize_t enable_store(struct device *pdev, struct device_attribute *attr,
 		
 		if (audio_enabled)
 			msleep(100);
-
-
+		
 			err = android_enable(dev);
 		
 		if (err < 0) {
@@ -3535,7 +3575,19 @@ static ssize_t enable_store(struct device *pdev, struct device_attribute *attr,
 		}
 		dev->enabled = true;
 	} else if (!enabled && dev->enabled) {
+
+	if(dev->disable_depth==0)
+	{
 		android_disable(dev);
+	}else{
+		printk("adbd process was abnormal! restore the disable_depth !\n");
+		while(dev->disable_depth>1)
+		{
+			android_enable(dev);
+		}
+		ffs_android_disable_flag_1=0;
+		ffs_android_disable_flag=0;
+	}
 		list_for_each_entry(conf, &dev->configs, list_item)
 			list_for_each_entry(f_holder, &conf->enabled_functions,
 						enabled_list) {
