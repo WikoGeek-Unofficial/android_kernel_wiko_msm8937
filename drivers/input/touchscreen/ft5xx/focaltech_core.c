@@ -1142,12 +1142,29 @@ if (bEnTGesture) {
 int fts_ts_resume(struct device *dev)
 {
 	int err;
+       //Begin <release all touches><20160614>;xiongdajun
+       #if defined(CONFIG_PROJECT_P7701)
+       int i;
+       #endif
+       //END <release all touches><20160614>;xiongdajun
 	struct fts_ts_data *data = dev_get_drvdata(dev);
 
 	if (!data->suspended) {
 		dev_dbg(dev, "Already in awake state\n");
 		return 0;
 	}
+    //Begin <release all touches><20160614>;xiongdajun
+    #if defined(CONFIG_PROJECT_P7701)
+      /* release all touches */
+         for (i = 0; i < data->pdata->num_max_touches; i++)
+         {
+                   input_mt_slot(data->input_dev, i);
+                   input_mt_report_slot_state(data->input_dev, MT_TOOL_FINGER, 0);
+         }
+         input_mt_report_pointer_emulation(data->input_dev, false);
+         input_sync(data->input_dev);
+     #endif
+     //End <release all touches><20160614>;xiongdajun
 //Begin<REQ><><20150910>Add WAKEUP_GESTURE for ft5xx;xiongdajun
 #ifdef CONFIG_FT5XX_TGESTURE_FUNCTION
 #if FTS_GESTRUE_EN
