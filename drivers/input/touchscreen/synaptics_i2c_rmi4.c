@@ -4832,6 +4832,11 @@ static int synaptics_rmi4_resume(struct device *dev)
 		dev_info(dev, "Already in awake state\n");
 		return 0;
 	}
+//Begin <release all touches><20160614>;xiongdajun
+       #if defined(CONFIG_PROJECT_P7701)
+    	synaptics_rmi4_release_all(rmi4_data);
+	#endif
+//END <release all touches><20160614>;xiongdajun
     //Begin<REQ><><20150902>Add WAKEUP_GESTURE for synaptics;xiongdajun
       #ifdef CONFIG_SYNA_TGESTURE_FUNCTION
         if (rmi4_data->enable_wakeup_gesture&&bEnTGesture) {
