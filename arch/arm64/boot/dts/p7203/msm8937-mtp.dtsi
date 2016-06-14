@@ -284,8 +284,8 @@
 	qcom,vdd-current-level = <15000 800000>;
 
 	/* device communication power supply */
-	vdd-io-supply = <&pm8937_l12>;
-	qcom,vdd-io-voltage-level = <1800000 2950000>;
+	vdd-io-supply = <&pm8937_l5>; //TN:peter
+	qcom,vdd-io-voltage-level = <1800000 1800000>;
 	qcom,vdd-io-current-level = <200 22000>;
 
 	pinctrl-names = "active", "sleep";
@@ -301,7 +301,7 @@
 		1 &intc 0 221 0
 		2 &tlmm 67 0>;
 	interrupt-names = "hc_irq", "pwr_irq", "status_irq";
-	cd-gpios = <&tlmm 67 0x1>;
+	cd-gpios = <&tlmm 67 0x0>;//TN:peter
 
 	qcom,clk-rates = <400000 20000000 25000000 50000000 100000000
 								200000000>;
