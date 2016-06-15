@@ -20,3 +20,9 @@ config FINGERPRINT_GOODIX_GFX1XM
   help
     Goodix Fingerprint chip GF316M/GF516M/GF318M/
 
+config FINGERPRINT_GOODIX_GFX1XM_QSEE
+  bool FINGERPRINT_GOODIX_GFX1XM_QSEE
+  default n
+  help
+    Goodix Fingerprint chip GF316M/GF516M/GF318M/ for QSEE
+
