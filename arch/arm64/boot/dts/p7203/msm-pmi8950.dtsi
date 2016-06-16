@@ -616,6 +616,18 @@ qcom,leds@a100 {
 				qcom,id = <1>;
 				qcom,current = <100>;           //modify current of front flash
 			};
+			//Ramiel add for front flightlight start 
+			pmi8950_flash2: qcom,flash_2 {
+				label = "flash";
+				qcom,led-name = "led:flash_2";
+				qcom,default-led-trigger =
+						"flash2_trigger";
+				qcom,max-current = <1000>;
+				qcom,duration = <1280>;
+				qcom,id = <3>;
+				qcom,current = <625>;
+			};
+			//Ramiel add for front flightlight end
 
 			pmi8950_torch0: qcom,torch_0 {
 				label = "torch";
@@ -636,6 +648,18 @@ qcom,leds@a100 {
 				qcom,id = <1>;
 				qcom,current = <60>;                //modify current of front flash
 			};
+			//Ramiel add for front flightlight start 
+			pmi8950_torch2: qcom,torch_2 {
+				label = "torch";
+				qcom,led-name = "led:torch_2";
+				qcom,default-led-trigger =
+						"torch2_trigger";
+				qcom,max-current = <200>;
+				qcom,id = <3>;
+				qcom,current = <120>;
+				
+			};
+			//Ramiel add for front flightlight end 
 
 			pmi8950_switch: qcom,switch {
 				label = "switch";
