@@ -971,13 +971,21 @@ static int fts_ts_stop(struct device *dev)
 	}
 	input_mt_report_pointer_emulation(data->input_dev, false);
 	input_sync(data->input_dev);
-
+      //Begin<20160617><modify for curent when close gesture>;xiongdajun
+       #if defined(CONFIG_PROJECT_P7701)
+        //if (!gpio_is_valid(data->pdata->reset_gpio)) {
+		txbuf[0] = FTS_REG_PMODE;
+		txbuf[1] = FTS_PMODE_HIBERNATE;
+		fts_i2c_write(data->client, txbuf, sizeof(txbuf));
+	//}
+	#else
 	if (!gpio_is_valid(data->pdata->reset_gpio)) {
 		txbuf[0] = FTS_REG_PMODE;
 		txbuf[1] = FTS_PMODE_HIBERNATE;
 		fts_i2c_write(data->client, txbuf, sizeof(txbuf));
 	}
-
+       #endif
+       //End<20160617><modify for curent when close gesture>;xiongdajun
 	if (data->pdata->power_on) {
 		err = data->pdata->power_on(false);
 		if (err) {
