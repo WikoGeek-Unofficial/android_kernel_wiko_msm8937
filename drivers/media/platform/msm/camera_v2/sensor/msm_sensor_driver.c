@@ -998,6 +998,39 @@ CSID_TG:
 			store_main_camera_info(main_camera_and_eeprom);
 		}
 	}
+       //BEGIN<20160617><add camera info for 7201>wangyanhui 
+	else if(!strncmp(slave_info->sensor_name, "imx258_guangbao_p7201", sizeof("imx258_guangbao_p7201")))
+	{
+		rc = snprintf(main_camera_and_eeprom, DEV_INFO_LEN, "%s_(13M)", 
+			"imx258_guangbao");		
+		if(rc < 0){
+			store_main_camera_info(slave_info->sensor_name);
+		}else{
+			store_main_camera_info(main_camera_and_eeprom);
+		}
+	}	 
+	else if(!strncmp(slave_info->sensor_name, "imx258_sunny_p7201", sizeof("imx258_sunny_p7201")))
+	{
+		rc = snprintf(main_camera_and_eeprom, DEV_INFO_LEN, "%s_(13M)", 
+			"imx258_sunny");		
+		if(rc < 0){
+			store_main_camera_info(slave_info->sensor_name);
+		}else{
+			store_main_camera_info(main_camera_and_eeprom);
+		}
+	}		
+	 else if(!strncmp(slave_info->sensor_name, "s5k4h8_p7201", sizeof("s5k4h8_p7201")))
+	{
+		 rc = snprintf(sub_camera_and_eeprom, DEV_INFO_LEN, "%s_(8M)", 
+			 "s5k4h8"); 	 
+		 if(rc < 0){
+			 store_sub_camera_info(slave_info->sensor_name);
+		 }else{
+			 store_sub_camera_info(sub_camera_and_eeprom);
+		 }
+
+	}
+       //END<20160617><add camera info for 7201>wangyanhui	 
 	else
 	{
 		if(!strncmp(s_ctrl->sensordata->eeprom_name, "daling_p5v23c", sizeof("daling_p5v23c"))){

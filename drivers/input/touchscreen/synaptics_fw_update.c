@@ -143,6 +143,10 @@ static int save_tp_info(char *product_id, char *config_id, int id, int rev_id)
             sprintf(buf, "DIJING-%s-S%d--V%d%d",
                     CONFIG_PRODUCT_NAME , id, config_id[2], config_id[3]);        
         }
+	else if(!strncmp(product_id, "YEJI", sizeof("YEJI"))){ //LINE<20160617><add tp info for p7201>wangyanhui
+            sprintf(buf, "YEJI-%s-S%d--V%d%d",
+                    CONFIG_PRODUCT_NAME ,  id, config_id[2]-0x30, config_id[3]-0x30);        
+        }	
         else{
 	//LINE<FFBAKK-502><20141104>Modify TP information;xiongdajun
             sprintf(buf, "JIEMIAN-%s-S%d--V%d%d",

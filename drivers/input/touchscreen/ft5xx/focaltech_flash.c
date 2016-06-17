@@ -119,6 +119,7 @@
 #define FTS_CTP_VENDOR_DIJING       (0x67)
 #define FTS_CTP_VENDOR_DEFAULT      (0x79)
 #define FTS_CTP_VENDOR_SHENYUE      (0xA0)
+#define FTS_CTP_VENDOR_BOEN          (0x3B) //LINE<20160617><add tp info for p7201>wangyanhui
 extern int store_tp_info(const char *const str);
 #endif
 //Begin<BUG><JABALL-0><20150831>store tp  info;xiongdajun
@@ -3204,12 +3205,16 @@ static int save_ft5xx_tp_info(int product_id, char *config_id, int id)
 		sprintf(ic_name, "FT%d4%d",5,36);
 	}	
 
-    //pr_info("xiongdajun add %d %x %d\n",product_id,config_id[0],id);
+ //pr_info("xiongdajun add %d %x %d\n",product_id,config_id[0],id);
         if(product_id == FTS_CTP_VENDOR_YEJI){
             sprintf(buf, "YEJI-%s-%s--V%d",
                     CONFIG_PRODUCT_NAME , ic_name, config_id[0]);
         }
-        
+        else if(product_id ==  FTS_CTP_VENDOR_BOEN) //LINE<20160617><add tp info for p7201>wangyanhui
+        {
+            sprintf(buf, "BOEN-%s-%s--V%d",
+                    CONFIG_PRODUCT_NAME , ic_name, config_id[0]);
+	}
         else{
 	//LINE<FFBAKK-502><20141104>Modify TP information;xiongdajun
             sprintf(buf, "JIEMIAN-%s-S%d--V%d%d",
