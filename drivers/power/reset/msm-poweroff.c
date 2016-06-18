@@ -59,7 +59,7 @@ static void scm_disable_sdi(void);
  * There is no API from TZ to re-enable the registers.
  * So the SDI cannot be re-enabled when it already by-passed.
 */
-static int download_mode = 1;
+static int download_mode = 0;			// when panic, reboot.  not ramdump
 static struct kobject dload_kobj;
 
 #ifdef CONFIG_MSM_DLOAD_MODE
@@ -192,6 +192,23 @@ static int dload_set(const char *val, struct kernel_param *kp)
 
 	return 0;
 }
+
+int __init tinno_enable_ramdump(char *enable)
+{
+	if (enable && strlen(enable))
+	{		
+		printk("tinno_enable_ramdump %s\n", enable);
+		if(!strcmp(enable,"1"))		
+			download_mode = 1;
+			return 0;
+	}
+	else
+	{
+		return -1;
+	}
+}
+early_param("ramdump", tinno_enable_ramdump);
+
 #else
 static void set_dload_mode(int on)
 {
