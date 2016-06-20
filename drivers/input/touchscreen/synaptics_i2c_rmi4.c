@@ -4833,7 +4833,7 @@ static int synaptics_rmi4_resume(struct device *dev)
 		return 0;
 	}
 //Begin <release all touches><20160614>;xiongdajun
-       #if defined(CONFIG_PROJECT_P7701)
+       #if defined(CONFIG_PROJECT_P7701) || defined(CONFIG_PROJECT_P7705)
     	synaptics_rmi4_release_all(rmi4_data);
 	#endif
 //END <release all touches><20160614>;xiongdajun
