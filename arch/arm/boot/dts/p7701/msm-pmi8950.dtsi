@@ -333,6 +333,7 @@
 			qcom,cycle-counter-en;
 			qcom,ext-sense-type;
 
+			qcom,fg-delta-soc = <1>;//LINE<BUG><HHABM-151><><><20150620>huiyong.yin
 			//add by lishengli for 3430    20160412
 			qcom,thermal-coefficients =[c8 86 c1 50 d3 37];
 			qcom,capacity-learning-on;
