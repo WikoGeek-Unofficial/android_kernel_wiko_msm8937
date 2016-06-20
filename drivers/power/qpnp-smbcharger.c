@@ -44,6 +44,7 @@ extern const char* Tinno_battery_name;
 #endif
 
 #define TINNO_SPECIAL_TEMP_SETTING
+#define ENABLE_SMART_CHARGING_CONTROL //enable smart charging control.
 
 /* Mask/Bit helpers */
 #define _SMB_MASK(BITS, POS) \
@@ -96,6 +97,42 @@ struct smbchg_version_tables {
 	int				aicl_rerun_period_len;
 	int				rchg_thr_mv;
 };
+
+#ifdef ENABLE_SMART_CHARGING_CONTROL
+#define SMBCHG_SMART_CHARGING_CONTROL_DELAY_MS      2000
+#define SMBCHG_SMART_CHARGING_CONTROL_RESTORE_MS    500
+
+#define FUNC_ENTER() pr_info("\n")
+
+enum {
+	SPEED_0 = 0,
+	SPEED_1,
+	SPEED_2,
+	SPEED_3,
+	SPEED_4,
+	SPEED_5,
+	SPEED_6,
+	SPEED_7,
+	SPEED_8,
+	SPEED_9,
+	SPEED_10,
+	SPEED_MAX
+};
+
+static const int speed_percent[SPEED_MAX] = {
+    100,    //SPEED_0, full/max speed
+    90,     //SPEED_1, 90% of max speed
+    80,     //SPEED_2, 80% of max speed
+    70,     //SPEED_3, 70% of max speed
+    60,     //SPEED_4, 60% of max speed
+    50,     //SPEED_5, 50% of max speed
+    40,     //SPEED_6, 40% of max speed
+    30,     //SPEED_7, 30% of max speed
+    20,     //SPEED_8, 20% of max speed
+    17,     //SPEED_9, 17% of max speed
+    10      //SPEED_10, 10% of max speed    
+};
+#endif
 
 struct smbchg_chip {
 	struct device			*dev;
@@ -282,6 +319,14 @@ struct smbchg_chip {
 	struct votable			*hw_aicl_rerun_disable_votable;
 	struct votable			*hw_aicl_rerun_enable_indirect_votable;
 	struct votable			*aicl_deglitch_short_votable;
+
+#ifdef ENABLE_SMART_CHARGING_CONTROL
+	int				current_speed;
+    int             target_speed;   //target speed set by app layer.
+    int             speed_current_map[SPEED_MAX];   //actual current/ma for speed level.
+    bool            speed_restoring;    //indicating if a speed restoration is in process.
+	struct delayed_work		smart_charging_control_work;	
+#endif    
 };
 
 enum qpnp_schg {
@@ -495,6 +540,10 @@ module_param_named(
 		else							\
 			pr_debug_ratelimited(fmt, ##__VA_ARGS__);	\
 	} while (0)
+
+#ifdef ENABLE_SMART_CHARGING_CONTROL
+static int smbchg_charge_speed_set(struct smbchg_chip *chip, int speed);
+#endif
 
 static int smbchg_read(struct smbchg_chip *chip, u8 *val,
 			u16 addr, int count)
@@ -4644,6 +4693,9 @@ static int smbchg_restricted_charging(struct smbchg_chip *chip, bool enable)
 	return rc;
 }
 
+#ifdef ENABLE_SMART_CHARGING_CONTROL
+static int smbchg_charge_speed_restore(struct smbchg_chip *chip);
+#endif
 static void handle_usb_removal(struct smbchg_chip *chip)
 {
 	struct power_supply *parallel_psy = get_parallel_psy(chip);
@@ -4694,6 +4746,11 @@ static void handle_usb_removal(struct smbchg_chip *chip)
 		HVDCP_SHORT_DEGLITCH_VOTER, false, 0);
 	if (!chip->hvdcp_not_supported)
 		restore_from_hvdcp_detection(chip);
+
+#ifdef ENABLE_SMART_CHARGING_CONTROL
+    //restore charge speed when charger is removed.    
+    smbchg_charge_speed_restore(chip);
+#endif    
 }
 
 static bool is_usbin_uv_high(struct smbchg_chip *chip)
@@ -5699,6 +5756,9 @@ static enum power_supply_property smbchg_battery_properties[] = {
 	POWER_SUPPLY_PROP_RERUN_AICL,
 	POWER_SUPPLY_PROP_RESTRICTED_CHARGING,
 	POWER_SUPPLY_PROP_batt_vol,
+#ifdef ENABLE_SMART_CHARGING_CONTROL	
+	POWER_SUPPLY_PROP_CHARGE_SPEED
+#endif	
 };
 
 static int smbchg_battery_set_property(struct power_supply *psy,
@@ -5776,6 +5836,11 @@ static int smbchg_battery_set_property(struct power_supply *psy,
 		if (chip->typec_psy)
 			update_typec_otg_status(chip, val->intval, false);
 		break;
+#ifdef ENABLE_SMART_CHARGING_CONTROL
+    case POWER_SUPPLY_PROP_CHARGE_SPEED:
+        rc = smbchg_charge_speed_set(chip, val->intval);
+        break;
+#endif        
 	default:
 		return -EINVAL;
 	}
@@ -5799,6 +5864,9 @@ static int smbchg_battery_is_writeable(struct power_supply *psy,
 	case POWER_SUPPLY_PROP_DP_DM:
 	case POWER_SUPPLY_PROP_RERUN_AICL:
 	case POWER_SUPPLY_PROP_RESTRICTED_CHARGING:
+#ifdef ENABLE_SMART_CHARGING_CONTROL
+    case POWER_SUPPLY_PROP_CHARGE_SPEED:
+#endif
 		rc = 1;
 		break;
 	default:
@@ -5819,6 +5887,11 @@ static int smbchg_battery_get_property(struct power_supply *psy,
 	case POWER_SUPPLY_PROP_batt_vol:
 		val->intval = get_prop_batt_voltage_now(chip)/1000;
 		break;
+#ifdef ENABLE_SMART_CHARGING_CONTROL
+    case POWER_SUPPLY_PROP_CHARGE_SPEED:
+        val->intval = chip->current_speed;
+        break;        
+#endif
 	case POWER_SUPPLY_PROP_STATUS:
 		val->intval = get_prop_batt_status(chip);
 		break;
@@ -7793,6 +7866,136 @@ static void dump_regs(struct smbchg_chip *chip)
 		dump_reg(chip, chip->misc_base + addr, "MISC CFG");
 }
 
+#ifdef ENABLE_SMART_CHARGING_CONTROL
+static int smbchg_set_hvdcp_speed(struct smbchg_chip *chip)
+{
+    int cur_total_fcc_ma = get_effective_result_locked(chip->fcc_votable);
+    int target_fcc_ma = 0;
+	int rc = 0;
+    int charge_type = POWER_SUPPLY_TYPE_UNKNOWN;
+    int parallel_fcc_ma = 0;
+    struct power_supply *parallel_psy = get_parallel_psy(chip);
+    union power_supply_propval pval = {0, };
+    
+	if (parallel_psy != NULL) {//get parallel charger fcc, debug output only.
+        parallel_psy->get_property(parallel_psy,
+                POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT_MAX, &pval);
+        parallel_fcc_ma = pval.intval / 1000;
+	}    
+
+    pr_smb(PR_STATUS, "FCC = %d[%d, %d] usb present: %d\n", 
+        cur_total_fcc_ma, chip->fastchg_current_ma, parallel_fcc_ma, chip->usb_present);
+
+    //check charger existance.
+    if(chip->usb_present) {
+        //reset restoration flag.
+        chip->speed_restoring = false;
+        
+        //check charger type, only hvdcp charger will be handled.
+        pr_smb(PR_STATUS, "current usb type: %d\n", chip->usb_supply_type);
+        if(chip->usb_supply_type != POWER_SUPPLY_TYPE_USB_HVDCP
+            && chip->usb_supply_type != POWER_SUPPLY_TYPE_USB_HVDCP_3) {
+            pr_smb(PR_STATUS, "Not hvdcp charger, skipping\n");
+            return rc;
+        }
+
+        //check charging type, only CC will be handled.
+        charge_type = get_prop_charge_type(chip);
+    	if (charge_type != POWER_SUPPLY_CHARGE_TYPE_FAST) {
+    		pr_smb(PR_STATUS, "Not in fast charge(%d), skipping\n", charge_type);
+    		return rc;
+    	}    
+    } else {
+        //only speed restoration is allowed to set FCC current without a charger connected.
+        if(chip->speed_restoring) {
+            chip->speed_restoring = false;//reset flag.
+        }else {
+            pr_smb(PR_STATUS, "Not restoration, no charger, skipping\n");
+            return rc;
+        }
+    }
+
+    target_fcc_ma = chip->speed_current_map[chip->target_speed];
+    if(target_fcc_ma != cur_total_fcc_ma) {
+        chip->current_speed = chip->target_speed;
+        pr_smb(PR_STATUS, "set fastchg current(total) to %d\n", target_fcc_ma);
+        smbchg_set_fastchg_current_user(chip, target_fcc_ma);
+    }
+
+	return rc;
+}
+
+static void smbchg_smart_charging_control_work(struct work_struct *work)
+{
+	struct smbchg_chip *chip =
+		container_of(work, struct smbchg_chip,
+				smart_charging_control_work.work);
+
+	FUNC_ENTER();
+
+    smbchg_set_hvdcp_speed(chip);
+}
+
+static int smbchg_charge_speed_set(struct smbchg_chip *chip, int speed)
+{
+    int target_speed = speed;
+    
+    if(target_speed >= SPEED_MAX) {
+        pr_smb(PR_STATUS, "INVALID speed: %d, reset to default\n", target_speed);
+        target_speed = SPEED_0;
+    }
+
+    pr_smb(PR_STATUS, "current speed: %d target: %d\n", chip->current_speed, target_speed);
+    if(target_speed != chip->current_speed) {
+        chip->target_speed = target_speed;
+        cancel_delayed_work(&chip->smart_charging_control_work);
+        schedule_delayed_work(&chip->smart_charging_control_work,
+                msecs_to_jiffies(SMBCHG_SMART_CHARGING_CONTROL_DELAY_MS));
+    }
+    
+    return 0;
+}
+
+static int smbchg_charge_speed_restore(struct smbchg_chip *chip)
+{
+    int restore_speed = SPEED_0;//default speed to restore. 100%.
+    
+    pr_smb(PR_STATUS, "current speed: %d target: %d\n", chip->current_speed, chip->target_speed);
+    if(chip->current_speed != restore_speed) {
+        chip->target_speed = restore_speed;
+        chip->speed_restoring = true;
+        cancel_delayed_work(&chip->smart_charging_control_work);
+        schedule_delayed_work(&chip->smart_charging_control_work,
+                msecs_to_jiffies(SMBCHG_SMART_CHARGING_CONTROL_RESTORE_MS));
+    }
+    
+    return 0;
+}
+
+
+static int smbchg_init_speed_current_map(struct smbchg_chip *chip)
+{
+    int i = 0;
+    int current_ma = 0;
+    int current_table_index = 0;
+
+    //calc the real speed and current maps based on max current cfg.
+    for(; i < SPEED_MAX; i++) {
+        current_ma = (chip->cfg_fastchg_current_ma * speed_percent[i]) / 100;
+        current_table_index = find_smaller_in_array(chip->tables.usb_ilim_ma_table,
+			current_ma, chip->tables.usb_ilim_ma_len);
+        if(current_table_index < 0) {            
+            pr_smb(PR_STATUS, "Cannot find %dma current_table, use the first one\n", current_ma);
+            current_table_index = 0;
+        }
+        chip->speed_current_map[i] = chip->tables.usb_ilim_ma_table[current_table_index];
+        pr_smb(PR_STATUS, "speed current map[%d] : requested %d, got %d\n", i, current_ma, chip->speed_current_map[i]);
+    }
+    
+	return 0;
+}
+#endif
+
 static int create_debugfs_entries(struct smbchg_chip *chip)
 {
 	struct dentry *ent;
@@ -8190,6 +8393,14 @@ static int smbchg_probe(struct spmi_device *spmi)
 
 	dump_regs(chip);
 	create_debugfs_entries(chip);
+#ifdef ENABLE_SMART_CHARGING_CONTROL
+    chip->current_speed = SPEED_0;
+    chip->target_speed = SPEED_0;
+    chip->speed_restoring = false;
+    smbchg_init_speed_current_map(chip);
+    INIT_DELAYED_WORK(&chip->smart_charging_control_work, smbchg_smart_charging_control_work);     
+#endif
+    
 	dev_info(chip->dev,
 		"SMBCHG successfully probe Charger version=%s Revision DIG:%d.%d ANA:%d.%d batt=%d dc=%d usb=%d\n",
 			version_str[chip->schg_version],

@@ -157,6 +157,7 @@ enum power_supply_property {
 	//add for Battery information	
 	POWER_SUPPLY_PROP_batt_vol,
 //add end	
+	POWER_SUPPLY_PROP_CHARGE_SPEED, //added for scc.
 	POWER_SUPPLY_PROP_TEMP,
 	POWER_SUPPLY_PROP_TEMP_MAX,
 	POWER_SUPPLY_PROP_TEMP_MIN,
