@@ -201,11 +201,11 @@
 			qcom,float-voltage-mv = <4400>;
 			qcom,resume-delta-mv = <200>;
 			//add by lishengli
-			qcom,fastchg-current-ma = <3000>;		
+			qcom,fastchg-current-ma = <1500>;		
 			qcom,chg-inhibit-fg;
 			qcom,rparasitic-uohm = <100000>;
 			qcom,bms-psy-name = "bms";
-			qcom,thermal-mitigation = <3000 1500 300 0>;
+			qcom,thermal-mitigation = <1500 1000 300 0>;
 			qcom,parallel-usb-min-current-ma = <1400>;
 			qcom,parallel-usb-9v-min-current-ma = <900>;
 			qcom,parallel-allowed-lowering-ma = <500>;
