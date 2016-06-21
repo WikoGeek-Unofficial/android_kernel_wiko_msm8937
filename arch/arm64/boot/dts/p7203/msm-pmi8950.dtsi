@@ -206,7 +206,7 @@
 			qcom,float-voltage-mv = <4400>;
 			qcom,fg-cc-cv-threshold-mv = <4390>;
 			qcom,resume-delta-mv = <200>;
-			qcom,fastchg-current-ma = <3000>;		
+			qcom,fastchg-current-ma = <2000>;		
 			qcom,chg-inhibit-fg;
 			qcom,rparasitic-uohm = <100000>;
 			qcom,bms-psy-name = "bms";
@@ -325,8 +325,8 @@
 			status = "okay";
 			qcom,bcl-lm-threshold-ma = <127>;
 			qcom,bcl-mh-threshold-ma = <405>;
-			qcom,fg-iterm-ma = <150>;
-			qcom,fg-chg-iterm-ma = <350>;
+			qcom,fg-iterm-ma = <300>;
+			qcom,fg-chg-iterm-ma = <250>;
 			qcom,pmic-revid = <&pmi8950_revid>;
 			qcom,fg-cutoff-voltage-mv = <3400>;
 			qcom,cycle-counter-en;
