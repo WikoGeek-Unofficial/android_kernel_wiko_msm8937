@@ -60,6 +60,11 @@ extern bool ext_spk_pa_current_state;
 #define WCD_MBHC_BTN_PRESS_COMPL_TIMEOUT_MS  50
 #define ANC_DETECT_RETRY_CNT 7
 #define WCD_MBHC_SPL_HS_CNT  1
+//++ camera selfie stick TN:peter
+#if defined CONFIG_PROJECT_P7705 ||defined CONFIG_PROJECT_P7203
+#define CAMERA_SELFIE_STICK
+#endif
+//-- camera selfie stick
 
 static int det_extn_cable_en;
 module_param(det_extn_cable_en, int,
@@ -76,6 +81,11 @@ enum wcd_mbhc_cs_mb_en_flag {
 extern struct switch_dev wcd_mbhc_headset_switch ;
 extern struct switch_dev wcd_mbhc_button_switch ;
 #endif
+//++ camera selfie stick TN:peter
+#ifdef CAMERA_SELFIE_STICK
+bool self_pole = false;
+#endif
+//-- camera selfie stick
 
 static void wcd_mbhc_jack_report(struct wcd_mbhc *mbhc,
 				struct snd_soc_jack *jack, int status, int mask)
@@ -834,7 +844,30 @@ static void wcd_mbhc_find_plug_and_report(struct wcd_mbhc *mbhc,
 						SND_JACK_HEADPHONE);
 			if (mbhc->current_plug == MBHC_PLUG_TYPE_HEADSET)
 				wcd_mbhc_report_plug(mbhc, 0, SND_JACK_HEADSET);
+	//++ camera selfie stick TN:peter
+	#ifdef CAMERA_SELFIE_STICK
+		if (mbhc->impedance_detect) {
+				mbhc->mbhc_cb->compute_impedance(mbhc,
+						&mbhc->zl, &mbhc->zr);
+				if ((mbhc->zl > 20000) && (mbhc->zr > 20000)) {
+					pr_debug("%s: special accessory \n", __func__);
+					/* Toggle switch back */
+					if (mbhc->mbhc_cfg->swap_gnd_mic &&
+						mbhc->mbhc_cfg->swap_gnd_mic(mbhc->codec)) {
+						pr_debug("%s: US_EU gpio present,flip switch again\n"
+								, __func__);
+					}
+					wcd_mbhc_report_plug(mbhc, 1, SND_JACK_HEADSET);
+					self_pole = true;
+				}
+				else {
+					wcd_mbhc_report_plug(mbhc, 1, SND_JACK_UNSUPPORTED);
+				}
+			}
+	#else
 		wcd_mbhc_report_plug(mbhc, 1, SND_JACK_UNSUPPORTED);
+	#endif	
+	//-- camera selfie stick
 	} else if (plug_type == MBHC_PLUG_TYPE_HEADSET) {
 		if (mbhc->mbhc_cfg->enable_anc_mic_detect)
 			anc_mic_found = wcd_mbhc_detect_anc_plug_type(mbhc);
@@ -1077,6 +1110,12 @@ static void wcd_enable_mbhc_supply(struct wcd_mbhc *mbhc,
 							WCD_MBHC_EN_CS);
 		} else if (plug_type == MBHC_PLUG_TYPE_HEADPHONE) {
 			wcd_enable_curr_micbias(mbhc, WCD_MBHC_EN_CS);
+		//++ camera selfie stick TN:peter		
+		#ifdef CAMERA_SELFIE_STICK
+		} else if (self_pole == true){
+			wcd_enable_curr_micbias(mbhc, WCD_MBHC_EN_CS);		
+		#endif
+		//-- camera selfie stick 
 		} else {
 			wcd_enable_curr_micbias(mbhc, WCD_MBHC_EN_NONE);
 		}
