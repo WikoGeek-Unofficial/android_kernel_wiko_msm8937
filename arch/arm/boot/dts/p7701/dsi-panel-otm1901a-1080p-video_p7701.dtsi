@@ -165,7 +165,7 @@
              15 01 00 00 00 00 02 C1 30
              	15 01 00 00 00 00 02 00 90
              15 01 00 00 00 00 02 b0 00
-             15 01 00 00 00 00 02 00 C5
+             15 01 00 00 00 00 02 00 C2
              15 01 00 00 00 00 02 b0 14
 		15 01 00 00 00 00 02 00 00
 		39 01 00 00 00 00 04 FF FF FF FF
@@ -184,7 +184,7 @@
 		//add ESD check
              qcom,esd-check-enabled;
              qcom,mdss-dsi-panel-status-command = [06 01 00 01 05 00 02 0A 08];
-		qcom,mdss-dsi-panel-status-command-state = "dsi_hs_mode";
+		qcom,mdss-dsi-panel-status-command-state = "dsi_lp_mode";
 		qcom,mdss-dsi-panel-status-check-mode = "reg_read";
              qcom,mdss-dsi-panel-status-read-length = <1>;
 		qcom,mdss-dsi-panel-status-value = <0x9c>;
