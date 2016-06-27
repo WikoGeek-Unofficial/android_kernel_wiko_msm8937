@@ -478,6 +478,12 @@ void fts_get_upgrade_array(void)
 	int ret = 0;
 	
 	ret = fts_read_reg(fts_i2c_client, FTS_REG_ID,&chip_id);
+//begin <add for update failed><20160627><>;xiongdajun
+#if defined(CONFIG_PROJECT_P7701)
+	if (chip_id == 0)
+		chip_id = 0x54;
+#endif
+//END <add for update failed><20160627><>;xiongdajun
 	if (ret<0) 
 	{
 		printk("[Focal][Touch] read value fail");
