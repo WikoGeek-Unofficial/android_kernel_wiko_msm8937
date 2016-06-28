@@ -3702,8 +3702,9 @@ static int synaptics_rmi4_gpio_configure(struct synaptics_rmi4_data *rmi4_data,
 			}
                     //Begin<add reset><><>;xiongdajun
 			gpio_set_value(rmi4_data->board->reset_gpio, 0);
-			msleep(rmi4_data->board->reset_delay);
-                    gpio_set_value(rmi4_data->board->reset_gpio, 1);
+			msleep(50);
+			gpio_set_value(rmi4_data->board->reset_gpio, 1);
+			msleep(120);
                     //END<add reset><><>;xiongdajun
 		} else
 			synaptics_rmi4_reset_command(rmi4_data);
