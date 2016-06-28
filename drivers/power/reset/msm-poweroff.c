@@ -59,8 +59,8 @@ static void scm_disable_sdi(void);
  * There is no API from TZ to re-enable the registers.
  * So the SDI cannot be re-enabled when it already by-passed.
 */
-#if defined(CONFIG_PROJECT_P7705)
-static int download_mode = 1;			// when panic, reboot.  not ramdump
+#if defined(CONFIG_TINNO_PRINTK_UART)
+static int download_mode = 0;			// when panic, reboot.  not ramdump
 #else
 static int download_mode = 1;
 #endif
