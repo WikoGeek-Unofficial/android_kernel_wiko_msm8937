@@ -143,6 +143,8 @@ void input_mt_report_slot_state(struct input_dev *dev,
 	slot->frame = mt->frame;
 
 	if (!active) {
+        printk(KERN_ERR 	"%s: ABS_MT_TRACKING_ID %d: -1\n",
+					__func__, ABS_MT_TRACKING_ID);
 		input_event(dev, EV_ABS, ABS_MT_TRACKING_ID, -1);
 		return;
 	}
@@ -150,7 +152,8 @@ void input_mt_report_slot_state(struct input_dev *dev,
 	id = input_mt_get_value(slot, ABS_MT_TRACKING_ID);
 	if (id < 0 || input_mt_get_value(slot, ABS_MT_TOOL_TYPE) != tool_type)
 		id = input_mt_new_trkid(mt);
-
+printk(KERN_ERR 	"%s: ABS_MT_TRACKING_ID %d: %d\n",
+					__func__, ABS_MT_TRACKING_ID,id);
 	input_event(dev, EV_ABS, ABS_MT_TRACKING_ID, id);
 	input_event(dev, EV_ABS, ABS_MT_TOOL_TYPE, tool_type);
 }
