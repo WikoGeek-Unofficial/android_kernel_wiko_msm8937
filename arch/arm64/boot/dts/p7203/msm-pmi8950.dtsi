@@ -206,11 +206,11 @@
 			qcom,float-voltage-mv = <4400>;
 			qcom,fg-cc-cv-threshold-mv = <4390>;
 			qcom,resume-delta-mv = <200>;
-			qcom,fastchg-current-ma = <2000>;		
+			qcom,fastchg-current-ma = <2000>;		    //7203 project quest chg-current:2A   ---pony
 			qcom,chg-inhibit-fg;
 			qcom,rparasitic-uohm = <100000>;
 			qcom,bms-psy-name = "bms";
-			qcom,thermal-mitigation = <3000 1500 300 0>;
+			qcom,thermal-mitigation = <2000 1000 300 0>;      //7203 project quest chg-current:2A   ---pony
 			qcom,parallel-usb-min-current-ma = <1400>;
 			qcom,parallel-usb-9v-min-current-ma = <900>;
 			qcom,parallel-allowed-lowering-ma = <500>;
