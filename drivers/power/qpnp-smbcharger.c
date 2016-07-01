@@ -1152,6 +1152,7 @@ static int get_prop_batt_current_now(struct smbchg_chip *chip)
 		pr_smb(PR_STATUS, "Couldn't get current rc = %d\n", rc);
 		ua = DEFAULT_BATT_CURRENT_NOW;
 	}
+	printk("charge_current_now: ua=%d\n",ua);// pony.ma, DATE20160701, grasp log for analyse charge current, DATE20160701-01 LINE	
 	return ua;
 }
 
