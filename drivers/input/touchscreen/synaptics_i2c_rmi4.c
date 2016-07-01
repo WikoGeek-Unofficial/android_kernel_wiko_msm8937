@@ -1144,17 +1144,15 @@ static void synaptics_rmi4_release_all(struct synaptics_rmi4_data *rmi4_data)
 	int max_num_fingers = rmi4_data->num_of_fingers;
 
 	for (finger = 0; finger < max_num_fingers; finger++) {
-        printk(KERN_ERR "xiongdajun add %s %d",__FUNCTION__,__LINE__);
 		input_mt_slot(rmi4_data->input_dev, finger);
 		input_mt_report_slot_state(rmi4_data->input_dev,
 				MT_TOOL_FINGER, 0);
 	}
-        printk(KERN_ERR "xiongdajun add %s %d",__FUNCTION__,__LINE__);
 
 	input_report_key(rmi4_data->input_dev, BTN_TOUCH, 0);
 	input_report_key(rmi4_data->input_dev,
 			BTN_TOOL_FINGER, 0);
-      input_mt_report_pointer_emulation(rmi4_data->input_dev, false);
+
 	input_sync(rmi4_data->input_dev);
 }
 
@@ -1323,8 +1321,6 @@ static int synaptics_rmi4_f11_abs_report(struct synaptics_rmi4_data *rmi4_data,
 					data_offset,
 					data,
 					data_reg_blk_size);
-            dev_dbg(&rmi4_data->i2c_client->dev,
-					"%s: read sus or failed %d\n",__func__,retval);
 			if (retval < 0)
 				return 0;
 
@@ -1358,14 +1354,6 @@ static int synaptics_rmi4_f11_abs_report(struct synaptics_rmi4_data *rmi4_data,
 					ABS_MT_PRESSURE, z);
 
 #ifdef REPORT_2D_W
-                    dev_dbg(&rmi4_data->i2c_client->dev,
-					"%s: ABS_MT_TOUCH_MAJOR %x: %d\n",
-					__func__, ABS_MT_TOUCH_MAJOR,
-					max(wx, wy));
-                    dev_dbg(&rmi4_data->i2c_client->dev,
-					"%s: BTN_TOUCH %x: %d\n",
-					__func__, ABS_MT_TOUCH_MINOR,
-					min(wx, wy));
 			input_report_abs(rmi4_data->input_dev,
 					ABS_MT_TOUCH_MAJOR, max(wx, wy));
 			input_report_abs(rmi4_data->input_dev,
@@ -1377,14 +1365,7 @@ static int synaptics_rmi4_f11_abs_report(struct synaptics_rmi4_data *rmi4_data,
 			touch_count++;
 		}
 	}
-    dev_dbg(&rmi4_data->i2c_client->dev,
-					"%s: BTN_TOUCH %x: %d\n",
-					__func__, BTN_TOUCH,
-					(touch_count > 0));
-    dev_dbg(&rmi4_data->i2c_client->dev,
-					"%s: BTN_TOUCH %x: %d\n",
-					__func__, BTN_TOOL_FINGER,
-					(touch_count > 0));
+
 	input_report_key(rmi4_data->input_dev, BTN_TOUCH, touch_count > 0);
 	input_report_key(rmi4_data->input_dev,
 			BTN_TOOL_FINGER, touch_count > 0);
@@ -1395,8 +1376,8 @@ static int synaptics_rmi4_f11_abs_report(struct synaptics_rmi4_data *rmi4_data,
 #else
 	input_mt_report_pointer_emulation(rmi4_data->input_dev, false);
 #endif
-	input_sync(rmi4_data->input_dev);
 
+	input_sync(rmi4_data->input_dev);
 
 	return touch_count;
 }
@@ -2166,7 +2147,7 @@ static int synaptics_rmi4_f11_init(struct synaptics_rmi4_data *rmi4_data,
 			sizeof(query));
 	if (retval < 0)
 		return retval;
-printk(KERN_ERR "xiongdajun add %s %d fingers_supported is %d \n",__FUNCTION__,__LINE__,query[1]);
+
 	/* Maximum number of fingers supported */
 	if ((query[1] & MASK_3BIT) <= 4)
 		fhandler->num_of_data_points = (query[1] & MASK_3BIT) + 1;
