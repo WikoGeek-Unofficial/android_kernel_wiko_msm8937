@@ -1807,6 +1807,9 @@ int32_t qpnp_vadc_read(struct qpnp_vadc_chip *vadc,
 
 		return 0;
 	}
+    
+    // Jake.L, DATE20160702, NOTE, DATE20160702-01 LINE
+    pr_err("reading die_temp, channel=%d\n", channel);
 
 	if (channel == VBAT_SNS) {
 		rc = qpnp_vadc_conv_seq_request(vadc, ADC_SEQ_NONE,
@@ -1853,7 +1856,7 @@ int32_t qpnp_vadc_read(struct qpnp_vadc_chip *vadc,
 		rc = qpnp_vadc_conv_seq_request(vadc, ADC_SEQ_NONE,
 				channel, result);
 		if (rc < 0)
-			pr_err("Error reading die_temp\n");
+			pr_err("Error reading die_temp, channel=%d\n", channel);
 
 		ret.intval = 0;
 		rc = vadc->vadc_chg_vote->set_property(vadc->vadc_chg_vote,
