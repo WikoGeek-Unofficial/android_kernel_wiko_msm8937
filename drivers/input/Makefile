@@ -4,6 +4,14 @@
 
 # Each configuration option enables a list of files.
 
+# Shuai.Chen, Date20160702, Modify For Wiko Unify Version, HCABMA-2, Start
+WIKO_UNIFY_DEF := $(strip $(subst ro.wiko.type =,,$(shell cat $(PWD)/../build.ini |grep ^ro.wiko.type)))
+ifeq ($(strip $(WIKO_UNIFY_DEF)),unify)
+ccflags-y += -DCONFIG_WIKO_UNIFY
+$(warning ---add marco CONFIG_WIKO_UNIFY---)
+endif
+# Shuai.Chen, Date20160702, Modify For Wiko Unify Version, HCABMA-2, End
+
 obj-$(CONFIG_INPUT)		+= input-core.o
 input-core-y := input.o input-compat.o input-mt.o ff-core.o
 
