@@ -60,7 +60,18 @@ static void scm_disable_sdi(void);
  * So the SDI cannot be re-enabled when it already by-passed.
 */
 
+//zenghaihui forbid download mode for 7701 MP
+#ifdef __BUILD_TYPE_USER__
+
+#if defined(CONFIG_PROJECT_P7701)
+static int download_mode = 0;
+#else
 static int download_mode = 1;
+#endif
+
+#else /* __BUILD_TYPE_USER__ */
+static int download_mode = 1;
+#endif
 
 
 static struct kobject dload_kobj;
