@@ -1,6 +1,14 @@
 #
 # Makefile for the linux kernel.
 #
+# Shuai.Chen, Date20160702, Modify For Wiko Unify Version, HCABMA-2, Start
+WIKO_UNIFY_DEF := $(strip $(subst ro.wiko.type =,,$(shell cat $(PWD)/../../../../../../build.ini |grep ^ro.wiko.type)))
+ifeq ($(strip $(WIKO_UNIFY_DEF)),unify)
+$(warning -wlj--PWD= $(PWD)-------)
+ccflags-y += -DCONFIG_WIKO_UNIFY
+$(warning -wlj---ccflags-y += -DCONFIG_WIKO_UNIFY---)
+endif
+# Shuai.Chen, Date20160702, Modify For Wiko Unify Version, HCABMA-2, End
 
 obj-y                          := main.o version.o mounts.o
 obj-y                          += noinitramfs.o
