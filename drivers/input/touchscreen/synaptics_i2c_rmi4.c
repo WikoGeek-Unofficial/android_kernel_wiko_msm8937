@@ -1145,6 +1145,10 @@ static void synaptics_rmi4_release_all(struct synaptics_rmi4_data *rmi4_data)
 
 	for (finger = 0; finger < max_num_fingers; finger++) {
 		input_mt_slot(rmi4_data->input_dev, finger);
+		//{ Add by Zidong to release all fingers
+		input_mt_report_slot_state(rmi4_data->input_dev,
+				MT_TOOL_FINGER, 1);
+		//}
 		input_mt_report_slot_state(rmi4_data->input_dev,
 				MT_TOOL_FINGER, 0);
 	}
