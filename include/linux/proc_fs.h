@@ -12,7 +12,7 @@ struct proc_dir_entry;
 #ifdef CONFIG_PROC_FS
 
 // Shuai.Chen, Date20160705, Modify For Wiko Unify Version, HCABMA-2, Start
-// #ifdef CONFIG_TINNO_DEV_INFO
+#ifdef CONFIG_TINNO_DEV_INFO
 #define MAX_DEVINFO_STR_LEN  255
 //add by tinno dev info
 #define DEF_TINNO_DEV_INFO(name)  \
@@ -59,7 +59,7 @@ do{ \
 	memset(name##_des_buf,0,MAX_DEVINFO_STR_LEN); \
 	sprintf(name##_des_buf,"%s",str); \
 }while(0)
-// #endif
+#endif
 //add end
 // Shuai.Chen, Date20160705, Modify For Wiko Unify Version, HCABMA-2, End
 
