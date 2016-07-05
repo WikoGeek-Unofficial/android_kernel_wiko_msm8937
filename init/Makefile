@@ -7,6 +7,8 @@ ifeq ($(strip $(WIKO_UNIFY_DEF)),unify)
 $(warning -wlj--PWD= $(PWD)-------)
 ccflags-y += -DCONFIG_WIKO_UNIFY
 $(warning -wlj---ccflags-y += -DCONFIG_WIKO_UNIFY---)
+ccflags-y += -DCONFIG_TINNO_DEV_INFO
+$(warning -wlj---ccflags-y += -DCONFIG_TINNO_DEV_INFO---)
 endif
 # Shuai.Chen, Date20160702, Modify For Wiko Unify Version, HCABMA-2, End
 
