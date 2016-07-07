@@ -466,7 +466,8 @@ enum aicl_short_deglitch_voters {
 	HVDCP_SHORT_DEGLITCH_VOTER,
 	NUM_HW_SHORT_DEGLITCH_VOTERS,
 };
-static int smbchg_debug_mask = PR_INTERRUPT|PR_STATUS|PR_DUMP|PR_PM|PR_MISC|PR_WIPOWER|PR_TYPEC;
+// pony.ma, DATE20160707, add log information, DATE20160707-01 LINE
+static int smbchg_debug_mask = PR_INTERRUPT|PR_STATUS; 
 
 module_param_named(
 	debug_mask, smbchg_debug_mask, int, S_IRUSR | S_IWUSR
@@ -2828,7 +2829,6 @@ static int set_usb_current_limit_vote_cb(struct device *dev,
 		return 0;
 
 	aicl_ma = smbchg_get_aicl_level_ma(chip);
-	printk("20160706: aicl_ma=%d\n",aicl_ma);
 	if (icl_ma > aicl_ma)
 		smbchg_rerun_aicl(chip);
 	smbchg_parallel_usb_check_ok(chip);
@@ -2844,13 +2844,9 @@ static int smbchg_system_temp_level_set(struct smbchg_chip *chip,
 
 	if (!chip->thermal_mitigation) {
 		dev_err(chip->dev, "Thermal mitigation not supported\n");
-		printk("pony1: Thermal mitigation not supported.  \n");
 
 		return -EINVAL;
 	}
-
-	printk("pony1: *chip->thermal_mitigation=%u\n",*chip->thermal_mitigation);
-
 
 	if (lvl_sel < 0) {
 		dev_err(chip->dev, "Unsupported level selected %d\n", lvl_sel);
@@ -3009,7 +3005,7 @@ static int smbchg_calc_max_flash_current(struct smbchg_chip *chip)
 	 */
 	avail_flash_ua = div64_s64(avail_flash_power_fw, vin_flash_uv * MCONV);
 	
-	pr_smb(PR_MISC,
+	pr_smb(PR_STATUS,
 		"esr_uohm=%d, chip->rpara_uohm=%d, chip->rslow_uohm=%d\n",
 		esr_uohm, chip->rpara_uohm, chip->rslow_uohm);                          //pony 20160707
 
@@ -7556,9 +7552,6 @@ static int smb_parse_dt(struct smbchg_chip *chip)
 				"qcom,thermal-mitigation",
 				chip->thermal_mitigation, chip->thermal_levels);
 
-		printk("pony1: *chip->thermal_mitigation=%u, chip->thermal_levels=%u\n",
-			*chip->thermal_mitigation,chip->thermal_levels);
-		
 		if (rc) {
 			dev_err(chip->dev,
 				"Couldn't read threm limits rc = %d\n", rc);
@@ -8155,9 +8148,6 @@ static int smbchg_probe(struct spmi_device *spmi)
 	struct power_supply *usb_psy, *typec_psy = NULL;
 	struct qpnp_vadc_chip *vadc_dev = NULL, *vchg_vadc_dev = NULL;
 	const char *typec_psy_name;
-
-	printk("pony: smbchg_probe\n");
-
 
 	usb_psy = power_supply_get_by_name("usb");
 	if (!usb_psy) {
