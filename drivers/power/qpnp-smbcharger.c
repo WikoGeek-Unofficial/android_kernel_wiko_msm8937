@@ -466,7 +466,8 @@ enum aicl_short_deglitch_voters {
 	HVDCP_SHORT_DEGLITCH_VOTER,
 	NUM_HW_SHORT_DEGLITCH_VOTERS,
 };
-static int smbchg_debug_mask;
+// Jake.L, DATE20160704, Open log for debug, DATE20160704-01 LINE
+static int smbchg_debug_mask = PR_INTERRUPT|PR_STATUS;
 module_param_named(
 	debug_mask, smbchg_debug_mask, int, S_IRUSR | S_IWUSR
 );
