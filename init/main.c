@@ -874,7 +874,7 @@ static void __init do_initcalls(void)
 
 // Shuai.Chen, Date20160702, Modify For Wiko Unify Version, HCABMA-2, Start
 #ifdef CONFIG_WIKO_UNIFY
-//static struct proc_dir_entry *device_info_entry;
+struct proc_dir_entry *device_info_entry;
 
 DEF_TINNO_DEV_INFO(Market_Area);
 DEF_TINNO_DEV_INFO(Proximity_sensor);
@@ -906,7 +906,7 @@ int tinno_platform_adapter(void)
 	char *p, *q;
 	int i;
 
-	//device_info_entry=proc_mkdir("Tinno_devinfo",NULL);
+	device_info_entry=proc_mkdir("Tinno_devinfo",NULL);
 	CAREAT_TINNO_DEV_INFO(Market_Area);
 	CAREAT_TINNO_DEV_INFO(Proximity_sensor);
 	CAREAT_TINNO_DEV_INFO(Light_sensor);

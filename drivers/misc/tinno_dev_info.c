@@ -21,7 +21,7 @@
 #include <asm/uaccess.h>
 
 #define TINNO_DEV_INFO_NAME "qcom,dev-info"
-static struct proc_dir_entry *device_info_entry;
+extern struct proc_dir_entry *device_info_entry;
 
 static struct of_device_id tinno_dev_info_match_table[] = {
 	{	.compatible = TINNO_DEV_INFO_NAME,
