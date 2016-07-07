@@ -466,8 +466,8 @@ enum aicl_short_deglitch_voters {
 	HVDCP_SHORT_DEGLITCH_VOTER,
 	NUM_HW_SHORT_DEGLITCH_VOTERS,
 };
-// Jake.L, DATE20160704, Open log for debug, DATE20160704-01 LINE
-static int smbchg_debug_mask = PR_INTERRUPT|PR_STATUS;
+static int smbchg_debug_mask = PR_INTERRUPT|PR_STATUS|PR_DUMP|PR_PM|PR_MISC|PR_WIPOWER|PR_TYPEC;
+
 module_param_named(
 	debug_mask, smbchg_debug_mask, int, S_IRUSR | S_IWUSR
 );
@@ -527,8 +527,8 @@ module_param_named(
 );
 
 #define pr_smb(reason, fmt, ...)				\
-	do {							\
-		if (smbchg_debug_mask & (reason))		\
+	do {	                                                              \
+        	if (smbchg_debug_mask & (reason))		\
 			pr_info(fmt, ##__VA_ARGS__);		\
 		else						\
 			pr_debug(fmt, ##__VA_ARGS__);		\
@@ -2828,6 +2828,7 @@ static int set_usb_current_limit_vote_cb(struct device *dev,
 		return 0;
 
 	aicl_ma = smbchg_get_aicl_level_ma(chip);
+	printk("20160706: aicl_ma=%d\n",aicl_ma);
 	if (icl_ma > aicl_ma)
 		smbchg_rerun_aicl(chip);
 	smbchg_parallel_usb_check_ok(chip);
@@ -2843,8 +2844,13 @@ static int smbchg_system_temp_level_set(struct smbchg_chip *chip,
 
 	if (!chip->thermal_mitigation) {
 		dev_err(chip->dev, "Thermal mitigation not supported\n");
+		printk("pony1: Thermal mitigation not supported.  \n");
+
 		return -EINVAL;
 	}
+
+	printk("pony1: *chip->thermal_mitigation=%u\n",*chip->thermal_mitigation);
+
 
 	if (lvl_sel < 0) {
 		dev_err(chip->dev, "Unsupported level selected %d\n", lvl_sel);
@@ -3002,7 +3008,12 @@ static int smbchg_calc_max_flash_current(struct smbchg_chip *chip)
 	 * before collapsing the battery. (available power/ flash input voltage)
 	 */
 	avail_flash_ua = div64_s64(avail_flash_power_fw, vin_flash_uv * MCONV);
+	
 	pr_smb(PR_MISC,
+		"esr_uohm=%d, chip->rpara_uohm=%d, chip->rslow_uohm=%d\n",
+		esr_uohm, chip->rpara_uohm, chip->rslow_uohm);                          //pony 20160707
+
+	pr_smb(PR_STATUS,
 		"avail_iflash=%lld, ocv=%d, ibat=%d, rbatt=%d\n",
 		avail_flash_ua, ocv_uv, ibat_now, rbatt_uohm);
 	return (int)avail_flash_ua;
@@ -3733,7 +3744,7 @@ static void smbchg_external_power_changed(struct power_supply *psy)
 	if (usb_supply_type != POWER_SUPPLY_TYPE_USB)
 		goto  skip_current_for_non_sdp;
 
-	pr_smb(PR_MISC, "usb type = %s current_limit = %d\n",
+	pr_smb(PR_STATUS, "usb type = %s current_limit = %d\n",
 			usb_type_name, current_limit);
 
 	rc = vote(chip->usb_icl_votable, PSY_ICL_VOTER, true,
@@ -7544,6 +7555,10 @@ static int smb_parse_dt(struct smbchg_chip *chip)
 		rc = of_property_read_u32_array(node,
 				"qcom,thermal-mitigation",
 				chip->thermal_mitigation, chip->thermal_levels);
+
+		printk("pony1: *chip->thermal_mitigation=%u, chip->thermal_levels=%u\n",
+			*chip->thermal_mitigation,chip->thermal_levels);
+		
 		if (rc) {
 			dev_err(chip->dev,
 				"Couldn't read threm limits rc = %d\n", rc);
@@ -8140,6 +8155,9 @@ static int smbchg_probe(struct spmi_device *spmi)
 	struct power_supply *usb_psy, *typec_psy = NULL;
 	struct qpnp_vadc_chip *vadc_dev = NULL, *vchg_vadc_dev = NULL;
 	const char *typec_psy_name;
+
+	printk("pony: smbchg_probe\n");
+
 
 	usb_psy = power_supply_get_by_name("usb");
 	if (!usb_psy) {
