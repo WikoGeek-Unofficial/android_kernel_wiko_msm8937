@@ -160,6 +160,7 @@ struct smbchg_chip {
 	int				fastchg_current_ma;
 	int				vfloat_mv;
 	int				fastchg_current_comp;
+	int                         no_parallel_defualt_dcp_icl_ma;//LINE<REQ><><DEFUALT USB DCP ICL SET TO 1400MA><20160708>huiyong.yin
 	int				float_voltage_comp;
 	int				resume_delta_mv;
 	int				safety_time;
@@ -7405,6 +7406,15 @@ static int smb_parse_dt(struct smbchg_chip *chip)
 			rc, 1);
 	OF_PROP_READ(chip, chip->fastchg_current_comp, "fastchg-current-comp",
 			rc, 1);
+	//BEGIN<REQ><><DEFUALT USB DCP ICL SET TO 1400MA><20160708>huiyong.yin
+       OF_PROP_READ(chip, chip->no_parallel_defualt_dcp_icl_ma, "no-parallel-defualt-dcp-icl-ma",
+                       rc, 1);
+        if (chip->no_parallel_defualt_dcp_icl_ma != -EINVAL){
+               printk( "no_parallel_defualt_dcp_icl_ma mA = %d\n",
+                chip->no_parallel_defualt_dcp_icl_ma);
+              smbchg_default_dcp_icl_ma = chip->no_parallel_defualt_dcp_icl_ma;
+        }
+       //END<REQ><><DEFUALT USB DCP ICL SET TO 1400MA><20160708>huiyong.yin
 	OF_PROP_READ(chip, chip->float_voltage_comp, "float-voltage-comp",
 			rc, 1);
 	if (chip->safety_time != -EINVAL &&
