@@ -72,8 +72,9 @@ obj-$(CONFIG_QPNP_MISC) 	+= qpnp-misc.o
 obj-$(CONFIG_TINNO_KE_DBUG)       += tinno_kernel_debug.o
 
 # Shuai.Chen, Date20160708, Modify For Wiko Unify Version, HCABMA-2, Start
-WIKO_UNIFY_DEF := $(strip $(subst ro.wiko.type =,,$(shell cat $(PWD)/../../../build.ini |grep ^ro.wiko.type)))
-$(warning -wlj--1--PWD= $(PWD)-------)
+WIKO_UNIFY_DEF := $(strip $(subst ro.wiko.type =,,$(shell cat $(PWD)/build.ini |grep ^ro.wiko.type)))
+$(warning -wlj--drivers--misc--PWD= $(PWD)-------)
+$(warning -wlj--drivers--misc--WIKO_UNIFY_DEF= $(WIKO_UNIFY_DEF)-------)
 ifeq ($(strip $(WIKO_UNIFY_DEF)),unify)
 obj-$(CONFIG_TINNO_DEV_INFO)       += tinno_dev_info.o
 endif
