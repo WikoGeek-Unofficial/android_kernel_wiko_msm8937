@@ -204,22 +204,23 @@
 
 			qcom,iterm-ma = <300>;
 			qcom,float-voltage-mv = <4400>;
-			qcom,fg-cc-cv-threshold-mv = <4390>;
+			
 			qcom,resume-delta-mv = <200>;
 			qcom,fastchg-current-ma = <2000>;		    //7203 project quest chg-current:2A   ---pony
 			qcom,chg-inhibit-fg;
 			qcom,rparasitic-uohm = <100000>;
 			qcom,bms-psy-name = "bms";
 			qcom,thermal-mitigation = <2000 1000 300 0>;      //7203 project quest chg-current:2A   ---pony
-			qcom,parallel-usb-min-current-ma = <1400>;
-			qcom,parallel-usb-9v-min-current-ma = <900>;
-			qcom,parallel-allowed-lowering-ma = <500>;
+			//qcom,parallel-usb-min-current-ma = <1400>;      //7203 hasn't parallel charge     ---pony
+			//qcom,parallel-usb-9v-min-current-ma = <900>;    //7203 hasn't parallel charge    ---pony
+			//qcom,parallel-allowed-lowering-ma = <500>;      //7203 hasn't parallel charge     ---pony
 			qcom,pmic-revid = <&pmi8950_revid>;
 			qcom,force-aicl-rerun;
 			qcom,aicl-rerun-period-s = <180>;
 			qcom,autoadjust-vfloat;
 			qcom,float-voltage-comp = <13>; //4100v
 			qcom,fastchg-current-comp = <900>; //900ma
+			qcom,no-parallel-defualt-dcp-icl-ma = <1800>;     //USB DCP ICL SET TO 1800MA        ---pony
 			qcom,chgr@1000 {
 				reg = <0x1000 0x100>;
 				interrupts =	<0x2 0x10 0x0>,
@@ -320,6 +321,7 @@
 			compatible = "qcom,qpnp-fg";
 			#address-cells = <1>;
 			#size-cells = <1>;
+			qcom,fg-cc-cv-threshold-mv = <4390>;          //---pony
 			qcom,vbat-estimate-diff-mv =<40>;
 			qcom,resume-soc = <98>;
 			status = "okay";
@@ -330,6 +332,7 @@
 			qcom,pmic-revid = <&pmi8950_revid>;
 			qcom,fg-cutoff-voltage-mv = <3400>;
 			qcom,cycle-counter-en;
+			
 //Battery NTC is 3435K ,But we choose 3440K,becuse Tinno's test method  is not rigorous.
 //NTC            C1                C2              C3
 //b3440 -3.3802  86C2  0.036987   50BB -0.00381  37CF

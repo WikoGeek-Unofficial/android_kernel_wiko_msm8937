@@ -70,6 +70,7 @@
 };
 
 //add by lishengli 20160305
+/*
 &i2c_2 {
 	/* Parallel-charger configuration */
 	smb1351-charger@1d {
@@ -81,6 +82,7 @@
 		qcom,recharge-mv = <100>;
 	};
 };
+*/  //7203 hasn't parallel charger   ---pony
 
 &dsi_panel_pwr_supply {
 	qcom,panel-supply-entry@2 {
