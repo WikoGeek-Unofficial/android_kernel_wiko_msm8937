@@ -964,7 +964,7 @@ CSID_TG:
 	}
 	 else if(!strncmp(slave_info->sensor_name, "p7705_sunny_s5k4h8", sizeof("p7705_sunny_s5k4h8")))
 	{
-		 rc = snprintf(sub_camera_and_eeprom, DEV_INFO_LEN, "%s_(8M)", 
+		 rc = snprintf(sub_camera_and_eeprom, DEV_INFO_LEN, "%s_(13M)", 
 			 "s5k4h8_sunny"); 	 
 		 if(rc < 0){
 			 store_sub_camera_info(slave_info->sensor_name);
@@ -975,7 +975,7 @@ CSID_TG:
 	}
 	 else if(!strncmp(slave_info->sensor_name, "p7705_sunny_0x11_s5k4h8", sizeof("p7705_sunny_0x11_s5k4h8")))
 	{
-		 rc = snprintf(sub_camera_and_eeprom, DEV_INFO_LEN, "%s_(8M)", 
+		 rc = snprintf(sub_camera_and_eeprom, DEV_INFO_LEN, "%s_(13M)", 
 			 "s5k4h8_Blue_sunny"); 	 
 		 if(rc < 0){
 			 store_sub_camera_info(slave_info->sensor_name);
@@ -989,7 +989,7 @@ CSID_TG:
 	        if(!strncmp(s_ctrl->sensordata->eeprom_name, "p7705_sunny_imx258_otp", sizeof("p7705_sunny_imx258_otp"))){
 			//store_sub_camera_eeprom_info("DaLing");
 
-			rc = snprintf(main_camera_and_eeprom, DEV_INFO_LEN, "%s_(13M)", 
+			rc = snprintf(main_camera_and_eeprom, DEV_INFO_LEN, "%s_(16M)", 
 					"imx258_sunny");		
 		}
 		if(rc < 0){
