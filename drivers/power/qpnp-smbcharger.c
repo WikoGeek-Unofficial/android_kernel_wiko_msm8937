@@ -2215,10 +2215,22 @@ static void smbchg_parallel_usb_enable(struct smbchg_chip *chip,
 
 	/* begin splitting the fast charge current */
 	fcc_ma = get_effective_result_locked(chip->fcc_votable);
-	parallel_chg_fcc_percent =
-		100 - smbchg_main_chg_fcc_percent;
-	target_parallel_fcc_ma =
-		(fcc_ma * parallel_chg_fcc_percent) / 100;
+
+#ifdef ENABLE_SMART_CHARGING_CONTROL
+    if(fcc_ma == 3300) {
+        target_parallel_fcc_ma = 1800;
+    } else {
+	    parallel_chg_fcc_percent =
+		    100 - smbchg_main_chg_fcc_percent;
+	    target_parallel_fcc_ma =
+		    (fcc_ma * parallel_chg_fcc_percent) / 100;
+    }
+#else
+	    parallel_chg_fcc_percent =
+		    100 - smbchg_main_chg_fcc_percent;
+	    target_parallel_fcc_ma =
+		    (fcc_ma * parallel_chg_fcc_percent) / 100;
+#endif
 	pval.intval = target_parallel_fcc_ma * 1000;
 	parallel_psy->set_property(parallel_psy,
 			POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT_MAX, &pval);
@@ -8001,7 +8013,19 @@ static int smbchg_init_speed_current_map(struct smbchg_chip *chip)
         chip->speed_current_map[i] = chip->tables.usb_ilim_ma_table[current_table_index];
         pr_smb(PR_STATUS, "speed current map[%d] : requested %d, got %d\n", i, current_ma, chip->speed_current_map[i]);
     }
-    
+	
+	//upper codes may be removed in the future.
+    chip->speed_current_map[0] = chip->cfg_fastchg_current_ma;
+    chip->speed_current_map[1] = 3000;
+    chip->speed_current_map[2] = 2700;
+    chip->speed_current_map[3] = 2300;
+    chip->speed_current_map[4] = 2000;
+    chip->speed_current_map[5] = 1500;
+    chip->speed_current_map[6] = 1200;
+    chip->speed_current_map[7] = 900;
+    chip->speed_current_map[8] = 600;
+    chip->speed_current_map[9] = 0;
+
 	return 0;
 }
 #endif
