@@ -3007,10 +3007,6 @@ static int smbchg_calc_max_flash_current(struct smbchg_chip *chip)
 	avail_flash_ua = div64_s64(avail_flash_power_fw, vin_flash_uv * MCONV);
 	
 	pr_smb(PR_STATUS,
-		"esr_uohm=%d, chip->rpara_uohm=%d, chip->rslow_uohm=%d\n",
-		esr_uohm, chip->rpara_uohm, chip->rslow_uohm);                          //pony 20160707
-
-	pr_smb(PR_STATUS,
 		"avail_iflash=%lld, ocv=%d, ibat=%d, rbatt=%d\n",
 		avail_flash_ua, ocv_uv, ibat_now, rbatt_uohm);
 	return (int)avail_flash_ua;
