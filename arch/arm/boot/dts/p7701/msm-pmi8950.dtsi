@@ -214,7 +214,7 @@
 
 			qcom,resume-delta-mv = <200>;
 			//add by lishengli
-			qcom,fastchg-current-ma = <3000>;		
+			qcom,fastchg-current-ma = <3300>;		
 			qcom,chg-inhibit-fg;
 			qcom,rparasitic-uohm = <100000>;
 			qcom,bms-psy-name = "bms";
@@ -350,6 +350,8 @@
 			//add by lishengli for 3430    20160412
 			qcom,thermal-coefficients =[c8 86 c1 50 d3 37];
 			qcom,capacity-learning-on;
+
+			qcom,tnmb-spebat = <150 66 250>;
 
 			qcom,fg-soc@4000 {
 			status = "okay";
