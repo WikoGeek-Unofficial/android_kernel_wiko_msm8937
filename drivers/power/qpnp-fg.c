@@ -40,6 +40,8 @@
 const char* Tinno_battery_name;
 #endif
 
+#define CONFIG_TNMB_SPECIAL_BATSOC
+
 #ifdef CONFIG_TINNO_CHARGER_CONFIG
 #define TINNO_BAT_EST_DIFF_DETECT
 #define TINNO_BAT_EST_DETECT_TIMES  3
@@ -616,6 +618,10 @@ struct fg_chip {
 	struct delayed_work	check_sanity_work;
 	struct fg_wakeup_source	sanity_wakeup_source;
 	u8			last_beat_count;
+#ifdef CONFIG_TNMB_SPECIAL_BATSOC
+	bool			spebatenabled;
+	u32			spebatsoc[3];
+#endif
 };
 
 /* FG_MEMIF DEBUGFS structures */
@@ -2140,8 +2146,10 @@ static int get_monotonic_soc_raw(struct fg_chip *chip)
 		return -EINVAL;
 	}
 
+#ifndef CONFIG_TNMB_SPECIAL_BATSOC
 	if (fg_debug_mask & FG_POWER_SUPPLY)
 		pr_info_ratelimited("raw: 0x%02x\n", cap[0]);
+#endif
 	return cap[0];
 }
 
@@ -2154,15 +2162,38 @@ static int get_prop_capacity(struct fg_chip *chip)
 {
 	int msoc, rc;
 	bool vbatt_low_sts;
+#ifdef CONFIG_TNMB_SPECIAL_BATSOC
+	int nsoc;
+#endif
 
 	if (chip->use_last_soc && chip->last_soc) {
 		if (chip->last_soc == FULL_SOC_RAW)
 			return FULL_CAPACITY;
 //modify by alik		
 printk("get_prop_capacity 1 !\n");
+#ifdef CONFIG_TNMB_SPECIAL_BATSOC
+	if (chip->spebatenabled) {
+		msoc = chip->last_soc;
+		if (msoc == 0) {
+			return EMPTY_CAPACITY;
+		} else if (msoc <= (int)chip->spebatsoc[0]) {
+		        nsoc = DIV_ROUND_CLOSEST((msoc - 1) * ((int)chip->spebatsoc[1] - 2), (int)chip->spebatsoc[0] - 2) + 1;     
+		        if(nsoc < EMPTY_CAPACITY) nsoc = EMPTY_CAPACITY;
+			return nsoc;
+		}
+		nsoc = DIV_ROUND_CLOSEST((msoc - 1 - (int)chip->spebatsoc[0]) * (FULL_CAPACITY - (int)chip->spebatsoc[1] - 1), (int)chip->spebatsoc[2] - (int)chip->spebatsoc[0]) + (int)chip->spebatsoc[1];
+		if(nsoc > FULL_CAPACITY) nsoc = FULL_CAPACITY;
+		return nsoc;
+        } else {
 		return DIV_ROUND_CLOSEST((chip->last_soc - 1) *
 				(FULL_CAPACITY - 1),
 				FULL_SOC_RAW - 2) + 1;
+        }
+#else
+		return DIV_ROUND_CLOSEST((chip->last_soc - 1) *
+				(FULL_CAPACITY - 1),
+				FULL_SOC_RAW - 2) + 1;
+#endif
 	}
 
 	if (chip->battery_missing)
@@ -2207,11 +2238,24 @@ printk("get_prop_capacity 2 !\n");
 	} else if (msoc == FULL_SOC_RAW) {
 		return FULL_CAPACITY;
 	}
+#ifdef CONFIG_TNMB_SPECIAL_BATSOC  //LIUJ20160625ADDO
+        else if (chip->spebatenabled && msoc <= (int)chip->spebatsoc[0]) {
+                nsoc = DIV_ROUND_CLOSEST((msoc - 1) * ((int)chip->spebatsoc[1] - 2), (int)chip->spebatsoc[0] - 2) + 1;     
+	        return nsoc;
+        }
+	if (chip->spebatenabled) {
+		nsoc = DIV_ROUND_CLOSEST((msoc - 1 - (int)chip->spebatsoc[0]) * (FULL_CAPACITY - (int)chip->spebatsoc[1] - 1), (int)chip->spebatsoc[2] - (int)chip->spebatsoc[0]) + (int)chip->spebatsoc[1];
+		if(nsoc > FULL_CAPACITY) nsoc = FULL_CAPACITY;
+		return nsoc;
+        } else
+	return DIV_ROUND_CLOSEST((msoc - 1) * (FULL_CAPACITY - 1),FULL_SOC_RAW - 2) + 1;
+#else
 //modiy by alik
 //	return DIV_ROUND_CLOSEST((msoc - 1) * (FULL_CAPACITY - 2),
 //			FULL_SOC_RAW - 2) + 1;
 
 	return DIV_ROUND_CLOSEST((msoc - 1) * (FULL_CAPACITY - 1),FULL_SOC_RAW - 2) + 1;
+#endif
 }
 
 #define HIGH_BIAS	3
@@ -2883,8 +2927,10 @@ static void update_cycle_count(struct work_struct *work)
 		/* Find out which bucket the SOC falls in */
 		bucket = batt_soc / BUCKET_SOC_PCT;
 
+#ifndef CONFIG_TNMB_SPECIAL_BATSOC
 		if (fg_debug_mask & FG_STATUS)
 			pr_info("batt_soc: %x bucket: %d\n", reg[2], bucket);
+#endif
 
 		/*
 		 * If we've started counting for the previous bucket,
@@ -3812,10 +3858,12 @@ static int fg_cap_learning_check(struct fg_chip *chip)
 			}
 		}
 		battery_soc = get_battery_soc_raw(chip);
+#ifndef CONFIG_TNMB_SPECIAL_BATSOC
 		if (fg_debug_mask & FG_AGING)
 			pr_info("checking battery soc (%d vs %d)\n",
 				battery_soc * 100 / FULL_PERCENT_3B,
 				chip->learning_data.max_start_soc);
+#endif
 		/* check if the battery is low enough to start soc learning */
 		if (battery_soc * 100 / FULL_PERCENT_3B
 				> chip->learning_data.max_start_soc) {
@@ -6628,6 +6676,22 @@ static int fg_of_init(struct fg_chip *chip)
 			chip->batt_temp_low_limit, chip->batt_temp_high_limit);
 
 	OF_READ_PROPERTY(chip->cc_soc_limit_pct, "fg-cc-soc-limit-pct", rc, 0);
+
+#ifdef CONFIG_TNMB_SPECIAL_BATSOC
+	if (of_find_property(chip->spmi->dev.of_node, "qcom,tnmb-spebat", NULL)) {
+		rc = of_property_read_u32_array(chip->spmi->dev.of_node, "qcom,tnmb-spebat", chip->spebatsoc, 3);
+		if (rc) {
+			chip->spebatenabled = false;
+		} else 
+                        chip->spebatenabled = true;
+	} else {
+                chip->spebatenabled = false;
+	}
+	//if (fg_debug_mask & FG_STATUS) {
+	    if (chip->spebatenabled) printk("spebat %d %d %d\n", chip->spebatsoc[0], chip->spebatsoc[1], chip->spebatsoc[2] );
+            else printk("spebat disable\n" );
+        //}
+#endif
 
 	if (fg_debug_mask & FG_STATUS)
 		pr_info("cc-soc-limit-pct: %d\n", chip->cc_soc_limit_pct);
