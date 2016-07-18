@@ -66,7 +66,7 @@ static void scm_disable_sdi(void);
 #if defined(CONFIG_PROJECT_P7701)
 static int download_mode = 0;
 #else
-static int download_mode = 0;
+static int download_mode = 1;
 #endif
 
 #else /* __BUILD_TYPE_USER__ */
