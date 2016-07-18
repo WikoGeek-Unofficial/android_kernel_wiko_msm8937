@@ -3018,10 +3018,6 @@ static int smbchg_calc_max_flash_current(struct smbchg_chip *chip)
 	avail_flash_ua = div64_s64(avail_flash_power_fw, vin_flash_uv * MCONV);
 	
 	pr_smb(PR_STATUS,
-		"esr_uohm=%d, chip->rpara_uohm=%d, chip->rslow_uohm=%d\n",
-		esr_uohm, chip->rpara_uohm, chip->rslow_uohm);                          //pony 20160707
-
-	pr_smb(PR_STATUS,
 		"avail_iflash=%lld, ocv=%d, ibat=%d, rbatt=%d\n",
 		avail_flash_ua, ocv_uv, ibat_now, rbatt_uohm);
 	return (int)avail_flash_ua;
@@ -8552,20 +8548,25 @@ static void smbchg_shutdown(struct spmi_device *spmi)
 			HVDCP_EN_BIT, 0);
 	if (rc < 0)
 		pr_err("Couldn't disable HVDCP rc=%d\n", rc);
+// pony.ma, DATE20160714, Reboot time is too long(8S) with wall charger in power off, DATE20160714-01 START
 
-	chip->hvdcp_3_det_ignore_uv = true;
-	/* fake a removal */
-	pr_smb(PR_MISC, "Faking Removal\n");
-	rc = fake_insertion_removal(chip, false);
-	if (rc < 0)
-		pr_err("Couldn't fake removal HVDCP Removed rc=%d\n", rc);
+//	chip->hvdcp_3_det_ignore_uv = true;
+//	/* fake a removal */
+//	pr_smb(PR_MISC, "Faking Removal\n");
+//	rc = fake_insertion_removal(chip, false);
+//	if (rc < 0)
+//		pr_err("Couldn't fake removal HVDCP Removed rc=%d\n", rc);
 
-	/* fake an insertion */
-	pr_smb(PR_MISC, "Faking Insertion\n");
-	rc = fake_insertion_removal(chip, true);
-	if (rc < 0)
-		pr_err("Couldn't fake insertion rc=%d\n", rc);
+//	/* fake an insertion */
+//	pr_smb(PR_MISC, "Faking Insertion\n");
+//	rc = fake_insertion_removal(chip, true);
+//	if (rc < 0)
+//	pr_err("Couldn't fake insertion rc=%d\n", rc);
 
+	rc = rerun_apsd(chip);
+	if (rc)
+		pr_err("APSD rerun failed\n");
+// pony.ma, DATE20160714-01 END
 	pr_smb(PR_MISC, "Wait 1S to settle\n");
 	msleep(1000);
 	chip->hvdcp_3_det_ignore_uv = false;
