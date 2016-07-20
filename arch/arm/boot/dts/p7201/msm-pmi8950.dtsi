@@ -215,6 +215,8 @@
 			qcom,fastchg-current-comp = <900>; //900ma
             //LINE<REQ><><DEFUALT USB DCP ICL SET TO 1400MA><20160708>huiyong.yin
 			qcom,no-parallel-defualt-dcp-icl-ma = <1400>;
+
+			qcom,no_support_qc;//<20160720><don't support qc>wangyanhui add 
 			qcom,chgr@1000 {
 				reg = <0x1000 0x100>;
 				interrupts =	<0x2 0x10 0x0>,

@@ -46,6 +46,8 @@ extern const char* Tinno_battery_name;
 #define TINNO_SPECIAL_TEMP_SETTING
 #define ENABLE_SMART_CHARGING_CONTROL //enable smart charging control.
 
+bool g_do_not_support_qc=false;//LINE<20160720><don't support qc>wangyanhui
+
 /* Mask/Bit helpers */
 #define _SMB_MASK(BITS, POS) \
 	((unsigned char)(((1 << (BITS)) - 1) << (POS)))
@@ -1890,6 +1892,9 @@ static bool is_hvdcp_present(struct smbchg_chip *chip)
 	int rc;
 	u8 reg, hvdcp_sel;
 
+	if(g_do_not_support_qc)//LINE<20160720><don't support qc>wangyanhui
+		return false;
+	
 	rc = smbchg_read(chip, &reg,
 			chip->usb_chgpth_base + USBIN_HVDCP_STS, 1);
 	if (rc < 0) {
@@ -7490,6 +7495,11 @@ static int smb_parse_dt(struct smbchg_chip *chip)
 					"qcom,force-aicl-rerun");
 	chip->skip_usb_suspend_for_fake_battery = of_property_read_bool(node,
 				"qcom,skip-usb-suspend-for-fake-battery");
+	
+	g_do_not_support_qc = of_property_read_bool(node,
+				"qcom,no_support_qc");//LINE<20160720><don't support qc>wangyanhui
+				
+	//pr_info("wangyanhui    g_do_not_support_qc = %d \n ", g_do_not_support_qc);
 
 	/* parse the battery missing detection pin source */
 	rc = of_property_read_string(chip->spmi->dev.of_node,
