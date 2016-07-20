@@ -102,7 +102,8 @@ struct smbchg_version_tables {
 #define SMBCHG_SMART_CHARGING_CONTROL_DELAY_MS      2000
 #define SMBCHG_SMART_CHARGING_CONTROL_RESTORE_MS    500
 
-#define FUNC_ENTER() pr_info("\n")
+#define FUNC_ENTER()        pr_info("\n")
+#define SPEED_CURRENT_PROP  "qcom,speed-current"
 
 enum {
 	SPEED_0 = 0,
@@ -115,22 +116,7 @@ enum {
 	SPEED_7,
 	SPEED_8,
 	SPEED_9,
-	SPEED_10,
 	SPEED_MAX
-};
-
-static const int speed_percent[SPEED_MAX] = {
-    100,    //SPEED_0, full/max speed
-    90,     //SPEED_1, 90% of max speed
-    80,     //SPEED_2, 80% of max speed
-    70,     //SPEED_3, 70% of max speed
-    60,     //SPEED_4, 60% of max speed
-    50,     //SPEED_5, 50% of max speed
-    40,     //SPEED_6, 40% of max speed
-    30,     //SPEED_7, 30% of max speed
-    20,     //SPEED_8, 20% of max speed
-    17,     //SPEED_9, 17% of max speed
-    10      //SPEED_10, 10% of max speed    
 };
 #endif
 
@@ -7994,33 +7980,36 @@ static int smbchg_charge_speed_restore(struct smbchg_chip *chip)
 static int smbchg_init_speed_current_map(struct smbchg_chip *chip)
 {
     int i = 0;
-    int current_ma = 0;
-    int current_table_index = 0;
+    int rc = 0;
+    bool use_dt_settings = false;
 
-    //calc the real speed and current maps based on max current cfg.
-    for(; i < SPEED_MAX; i++) {
-        current_ma = (chip->cfg_fastchg_current_ma * speed_percent[i]) / 100;
-        current_table_index = find_smaller_in_array(chip->tables.usb_ilim_ma_table,
-			current_ma, chip->tables.usb_ilim_ma_len);
-        if(current_table_index < 0) {            
-            pr_smb(PR_STATUS, "Cannot find %dma current_table, use the first one\n", current_ma);
-            current_table_index = 0;
-        }
-        chip->speed_current_map[i] = chip->tables.usb_ilim_ma_table[current_table_index];
-        pr_smb(PR_STATUS, "speed current map[%d] : requested %d, got %d\n", i, current_ma, chip->speed_current_map[i]);
+    if (of_find_property(chip->dev->of_node, SPEED_CURRENT_PROP, NULL)) {
+		rc = of_property_read_u32_array(chip->dev->of_node, SPEED_CURRENT_PROP, chip->speed_current_map, SPEED_MAX);
+		if (rc) {
+            dev_err(chip->dev,
+				"Couldn't read speed-current rc = %d\n", rc);
+		} else {
+		    use_dt_settings = true;
+		}
     }
-	
-	//upper codes may be removed in the future.
-    chip->speed_current_map[0] = chip->cfg_fastchg_current_ma;
-    chip->speed_current_map[1] = 3000;
-    chip->speed_current_map[2] = 2700;
-    chip->speed_current_map[3] = 2300;
-    chip->speed_current_map[4] = 2000;
-    chip->speed_current_map[5] = 1500;
-    chip->speed_current_map[6] = 1200;
-    chip->speed_current_map[7] = 900;
-    chip->speed_current_map[8] = 600;
-    chip->speed_current_map[9] = 0;
+
+    //use default settings if property is not found in device tree.
+    if(!use_dt_settings) {	
+        chip->speed_current_map[0] = chip->cfg_fastchg_current_ma;
+        chip->speed_current_map[1] = 3000;
+        chip->speed_current_map[2] = 2700;
+        chip->speed_current_map[3] = 2300;
+        chip->speed_current_map[4] = 2000;
+        chip->speed_current_map[5] = 1500;
+        chip->speed_current_map[6] = 1200;
+        chip->speed_current_map[7] = 900;
+        chip->speed_current_map[8] = 600;
+        chip->speed_current_map[9] = 0;
+    }
+    
+    for(; i < SPEED_MAX; i++) {
+        pr_smb(PR_STATUS, "speed current map[%d] : %d\n", i, chip->speed_current_map[i]);
+    }
 
 	return 0;
 }
