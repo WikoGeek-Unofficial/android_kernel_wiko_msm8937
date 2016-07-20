@@ -69,6 +69,18 @@ static uint8_t common_cmds[DIAG_NUM_COMMON_CMD] = {
 	DIAG_CMD_LOG_ON_DMND
 };
 
+//wj add for audio ctl cammod begain
+enum {
+    TEST_SPEAKER = 0,
+    TEST_RECEIVER,
+    TEST_MAINMIC,
+    TEST_SUBMIC,
+    TEST_HEADSETMIC,
+    TEST_STOPTEST,
+    TEST_MAX,
+};
+//wj add for audio ctl cammod end
+
 static uint8_t hdlc_timer_in_progress;
 
 /* Determine if this device uses a device tree */
@@ -957,6 +969,16 @@ int diag_process_apps_pkt(unsigned char *buf, int len,
 	int i;
 	int mask_ret;
 	int write_len = 0;
+	
+	//wj add for audio ctl cammod begain
+	char *speaker[3] = { "AUDIO_ID=SPEAKER", NULL ,NULL};
+	char *receiver[3]    = { "AUDIO_ID=RECEIVER", NULL,NULL };
+	char *main_mic[3]   = { "AUDIO_ID=MAINMIC", NULL,NULL };
+	char *sub_mic[3]   = { "AUDIO_ID=SUBMIC", NULL,NULL };
+	char *headset_mic[3]   = { "AUDIO_ID=HEADSETMIC", NULL,NULL };
+	char *stoptest[2]   = { "AUDIO_ID=STOPTEST", NULL };
+//wj add for audio ctl cammod end
+
 	unsigned char *temp = NULL;
 	struct diag_cmd_reg_entry_t entry;
 	struct diag_cmd_reg_entry_t *temp_entry = NULL;
@@ -1003,6 +1025,54 @@ int diag_process_apps_pkt(unsigned char *buf, int len,
 	    return 0;
 	}
 	//zyh end
+
+//wj add for audio ctl cammod("75 65 85 68 0X")
+        /* Check for the diag command AUD "75 65 85 68 0 0"*/		
+       if(entry.subsys_id == 65 && entry.cmd_code_hi == 17493){
+           int test_id = (int)(*(char *)temp++);
+           int during = (int)(*(char *)temp);
+           int ret = -1;
+           char state_buf[10];
+           snprintf(state_buf, sizeof(state_buf),"DURING=%d", during);
+           printk("====wj audio test id : %d==during=%d=\n", test_id,during);
+           switch(test_id){
+               case TEST_SPEAKER:
+                   speaker[1] = state_buf;
+                   ret=kobject_uevent_env(&driver->diag_dev->kobj, KOBJ_CHANGE,speaker);
+                   break;
+               case TEST_RECEIVER:
+                   receiver[1] = state_buf;
+                   ret=kobject_uevent_env(&driver->diag_dev->kobj, KOBJ_CHANGE,receiver);
+                   break;
+               case TEST_MAINMIC:
+                   main_mic[1] = state_buf;
+                   ret=kobject_uevent_env(&driver->diag_dev->kobj, KOBJ_CHANGE,main_mic);
+                   break;
+               case TEST_SUBMIC:
+                   sub_mic[1] = state_buf;
+                   ret=kobject_uevent_env(&driver->diag_dev->kobj, KOBJ_CHANGE,sub_mic);
+                   break;
+               case TEST_HEADSETMIC:
+                   headset_mic[1] = state_buf;
+                   ret=kobject_uevent_env(&driver->diag_dev->kobj, KOBJ_CHANGE,headset_mic);
+                   break;
+               case TEST_STOPTEST:
+                   ret=kobject_uevent_env(&driver->diag_dev->kobj, KOBJ_CHANGE,stoptest);
+                   break;
+               default:
+                   pr_debug("wj audio error cammod");
+                   break;
+           }
+           driver->apps_rsp_buf[0] = 75;
+	    driver->apps_rsp_buf[1] = 65;
+	    driver->apps_rsp_buf[2] = 85;
+	    driver->apps_rsp_buf[3] = 68;
+	    driver->apps_rsp_buf[4] = test_id;
+           driver->apps_rsp_buf[5] = during;
+	    diag_send_rsp(driver->apps_rsp_buf, 5);
+           return 0;
+       }
+//wj add end
 
 	if (*buf == DIAG_CMD_LOG_ON_DMND && driver->log_on_demand_support &&
 	    driver->feature[PERIPHERAL_MODEM].rcvd_feature_mask) {
