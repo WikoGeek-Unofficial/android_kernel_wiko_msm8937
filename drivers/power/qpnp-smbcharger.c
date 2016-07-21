@@ -7918,8 +7918,9 @@ static int smbchg_set_hvdcp_speed(struct smbchg_chip *chip)
         //check charger type, only hvdcp charger will be handled.
         pr_smb(PR_STATUS, "current usb type: %d\n", chip->usb_supply_type);
         if(chip->usb_supply_type != POWER_SUPPLY_TYPE_USB_HVDCP
-            && chip->usb_supply_type != POWER_SUPPLY_TYPE_USB_HVDCP_3) {
-            pr_smb(PR_STATUS, "Not hvdcp charger, skipping\n");
+            && chip->usb_supply_type != POWER_SUPPLY_TYPE_USB_HVDCP_3
+            && chip->usb_supply_type != POWER_SUPPLY_TYPE_USB_DCP) {
+            pr_smb(PR_STATUS, "Not hvdcp/dcp charger, skipping\n");
             return rc;
         }
 
