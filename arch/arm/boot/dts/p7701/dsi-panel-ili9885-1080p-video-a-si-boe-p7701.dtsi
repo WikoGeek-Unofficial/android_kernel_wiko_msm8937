@@ -17,8 +17,8 @@
  *---------------------------------------------------------------------------*/
 &mdss_mdp {
 	dsi_ili9885_1080p_video_a_si_boe_p7701: \
-	qcom,mdss_dsi_ili9885_1080p_video_a_si_boe_p7701 {
-		qcom,mdss-dsi-panel-name = "ili9885_1080p_video_a_si_boe_p7701";
+	qcom,mdss_dsi_hx8394_1080p_video_a_si_boe_p7701 {
+		qcom,mdss-dsi-panel-name = "hx8394_1080p_video_a_si_boe_p7701";
 		qcom,mdss-dsi-panel-controller = <&mdss_dsi0>;
 		qcom,mdss-dsi-panel-type = "dsi_video_mode";
 		qcom,mdss-dsi-panel-destination = "display_1";
@@ -27,8 +27,8 @@
 		qcom,mdss-dsi-stream = <0>;
 		qcom,mdss-dsi-panel-width = <1080>;
 		qcom,mdss-dsi-panel-height = <1920>;
-		qcom,mdss-dsi-h-front-porch = <152>;
-		qcom,mdss-dsi-h-back-porch = <12>;
+		qcom,mdss-dsi-h-front-porch = <45>;
+		qcom,mdss-dsi-h-back-porch = <45>;
 		qcom,mdss-dsi-h-pulse-width = <8>;
 		qcom,mdss-dsi-h-sync-skew = <0>;
 		qcom,mdss-dsi-v-back-porch = <18>;
@@ -42,27 +42,25 @@
 		qcom,mdss-dsi-color-order = "rgb_swap_rgb";
 		qcom,mdss-dsi-underflow-color = <0xff>;
 		qcom,mdss-dsi-border-color = <0>;
-		qcom,mdss-dsi-on-command = [29 01 00 00 00 00 04 B0 98 85 0A
-			29 01 00 00 00 00 08 C4 70 19 23 00 1F 1F 00
-			29 01 00 00 00 00 10 D0 45 05 33 EB E7 C0 88 A0 A0 03 02 84 D0 1B 10
-			29 01 00 00 00 00 0C D3 44 33 05 03 63 77 33 26 22 43 6E
-			29 01 00 00 00 00 1C DD 10 31 00 3B 33 1D 00 3C 00 3C 00 49 00 FF FF F8 E1 80 33 33 15 08 A0 01 00 71 7F
-			29 01 00 00 00 00 08 EC 76 1E 32 00 46 00 00                             //modify 5/25
-			29 01 00 00 00 00 0D D6 00 00 08 17 23 65 77 44 87 00 00 09              //modify 6/6
-			//29 01 00 00 00 00 06 D7 00 00 00 81 A7
+		qcom,mdss-dsi-on-command = [
+		29 01 00 00 00 00 04 B9 FF 83 98
+		29 01 00 00 00 00 0c B1 28 0F 8F 01 02 33 33 33 AF B9 0D  
+		15 01 00 00 00 00 02 D2 44                       
+		29 01 00 00 00 00 0a B2 40 80 AE 0C 12 45 01 11 00
+		29 01 00 00 00 00 1a B4 00 FF 68 20 68 20 00 00 09 07 80 00 07 3A 63 7E 63 7E 00 00 09 07 80 3A 00
+		15 01 00 00 00 00 02 BD 01
+		15 01 00 00 00 00 02 B1 24                       
+		15 01 00 00 00 00 02 BD 02
+		29 01 00 00 00 00 04 D3 00 04 10
+		15 01 00 00 00 00 02 BD 00
+		29 01 00 00 00 00 30 D3 20 00 08 04 08 04 00 00 08 00 32 10 09 00 09 00 00 00 00 00 00 00 00 00 00 33 00 0B 0B 37 00 00 00 10 40 00 07 14 00 00 00 02 10 07 14 02 10
+		29 01 00 00 00 00 29 D5 18 18 19 19 22 23 20 21 19 19 02 03 02 03 00 01 00 01 06 07 06 07 04 05 04 05 18 18 18 18 18 18 18 18 18 18 18 18 18 18
+		29 01 00 00 00 00 29 D6 18 18 19 19 21 20 23 22 18 18 05 04 05 04 07 06 07 06 01 00 01 00 03 02 03 02 19 19 18 18 18 18 18 18 18 18 18 18 18 18
+		15 01 00 00 00 00 02 CC 0E
+		29 01 00 00 00 00 3b E0 00 0A 16 1C 1D 20 22 22 45 5A 6A 69 74 86 8E 90 9D 9D 9A A8 BA 5C 5A 60 60 64 71 78 7F 00 0B 16 1C 1D 20 22 22 45 5A 6A 69 74 86 8E 90 9D 9D 9A A8 BA 5C 5A 60 60 64 71 78 7F
 			
-			29 01 00 00 00 00 0f D5 8B 00 00 00 01 8E 01 8E 01 4B 00 00 00 00
-			29 01 00 00 00 00 7B C7 00 00 00 14 00 36 00 52 00 69 00 7D 00 93 00 A2 00 B3 00 E3 01 09 01 45 01 70 01 B1 01 E5 01 E7 02 1C 02 5C 02 88 02 C6 02 EE 03 20 03 32 03 41 03 57 03 6A 03 81 03 A4 03 CE 03 FF 00 00 00 14 00 36 00 52 00 69 00 7D 00 93 00 A2 00 B3 00 E3 01 09 01 45 01 70 01 B1 01 E5 01 E7 02 1C 02 5C 02 88 02 C6 02 EE 03 20 03 32 03 41 03 57 03 6A 03 81 03 A4 03 CE 03 FF 01 01			 
-			29 01 00 00 00 00 4A E5 36 24 92 80 34 12 12 00 00 36 36 24 24 26 36 F6 F6 F6 F6 F6 36 24 9B 89 34 1B 1B 09 09 3F 3F 2D 2D 26 36 F6 F6 F6 F6 F6 04 40 90 00 68 00 00 00 00 01 01 44 00 6F 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 07	
-			29 01 00 00 00 00 43 EA 70 00 03 03 00 00 00 40 00 00 00 00 00 00 0b 00 00 00 89 8a 05 05 22 0a 0a 0b 00 08 00 30 01 09 00 40 80 c0 00 00 01 23 45 67 89 ab cd ef cc cc 22 22 cc 00 00 00 00 00 00 00 00 CC cc 33 33 33 33 33			 
-			29 01 00 00 00 00 14 EE 22 10 02 06 0f 40 00 07 00 04 00 00 c0 b9 77 70 55 05 1f                       //modify 5/25
-			29 01 00 00 00 00 04 C1 04 00 01
-			29 01 00 00 00 00 0A C2 10 F7 80 16 18 16 18 F3 16    //ADD 5/16
-			29 01 00 00 00 00 0E EF 3C 05 52 13 E1 33 5B 09 00 00 00 00 00
-			05 01 00 00 C8 00 02 11 00
-			15 01 00 00 00 00 02 35 00
-			05 01 00 00 0A 00 02 29 00
-			15 01 00 00 00 00 02 b0 11
+		15 01 00 00 78 00 02 11 00 	
+		15 01 00 00 32 00 02 29 00
 			];
 		qcom,mdss-dsi-off-command = [05 01 00 00 32 00 02 28 00 \
 			05 01 00 00 78 00 02 10 00];
@@ -70,11 +68,11 @@
 		qcom,mdss-dsi-off-command-state = "dsi_hs_mode";
             //Begin xiongdajun add ESD check for ili9885
              qcom,esd-check-enabled;
-             qcom,mdss-dsi-panel-status-command = [06 01 00 01 05 00 02 0A 08];
-		qcom,mdss-dsi-panel-status-command-state = "dsi_lp_mode";
-		qcom,mdss-dsi-panel-status-check-mode = "reg_read";
-             qcom,mdss-dsi-panel-status-read-length = <1>;
-		qcom,mdss-dsi-panel-status-value = <0x9c>;
+    qcom,mdss-dsi-panel-status-check-mode = "reg_read";         
+		qcom,mdss-dsi-panel-status-command-state = "dsi_lp_mode";		
+		qcom,mdss-dsi-panel-status-command = [06 01 00 01 05 00 02 09 08];
+    qcom,mdss-dsi-panel-status-read-length = <3>;
+		qcom,mdss-dsi-panel-status-value = <0x80 0x73 0x04>;
               //END xiongdajun add ESD check for ili9885
 		qcom,mdss-dsi-h-sync-pulse = <1>;
 		qcom,mdss-dsi-traffic-mode = "burst_mode";
