@@ -1368,6 +1368,13 @@ static void qpnp_flash_led_work(struct work_struct *work)
 		            if(flash_node->prgm_current)
                         flash_node->prgm_current = 100;
            #endif
+
+           //jiangwei begin
+           #if defined(CONFIG_PROJECT_P7201) 
+                    if(flash_node->prgm_current)
+                        flash_node->prgm_current = 150;
+           #endif
+           //jiangwei end
                     //END xiongdajun modify flash current
 			val = (u8)(flash_node->prgm_current *
 						FLASH_TORCH_MAX_LEVEL
@@ -1375,6 +1382,7 @@ static void qpnp_flash_led_work(struct work_struct *work)
 			rc = qpnp_led_masked_write(led->spmi_dev,
 						led->current_addr,
 						FLASH_CURRENT_MASK, val);
+			printk("Ramiel TORCH (0) FLASH_LED_SWITCH prgm_current= %d \n",flash_node->prgm_current);
 			printk("Ramiel TORCH (0) FLASH_LED_SWITCH MAX= %d \n",flash_node->max_current);
 			printk("Ramiel TORCH (0) FLASH_LED_SWITCH  %d \n",val);
 			if (rc) {
@@ -1391,6 +1399,14 @@ static void qpnp_flash_led_work(struct work_struct *work)
                     if(flash_node->prgm_current2)
                         flash_node->prgm_current2 = 40;
                     #endif
+
+	           //jiangwei begin
+	           #if defined(CONFIG_PROJECT_P7201) 
+	                    if(flash_node->prgm_current2)
+	                        flash_node->prgm_current2 = 150;
+	           #endif
+	           //jiangwei end
+	           
                     //END xiongdajun modify flash current
 			val = (u8)(flash_node->prgm_current2 *
 						FLASH_TORCH_MAX_LEVEL
@@ -1398,6 +1414,7 @@ static void qpnp_flash_led_work(struct work_struct *work)
 			rc = qpnp_led_masked_write(led->spmi_dev,
 					led->current2_addr,
 					FLASH_CURRENT_MASK, val);
+			printk("Ramiel TORCH (1) FLASH_LED_SWITCH prgm_current2= %d \n",flash_node->prgm_current2);
 			printk("Ramiel TORCH (1) FLASH_LED_SWITCH MAX= %d \n",flash_node->max_current);
 			printk("Ramiel TORCH (1) FLASH_LED_SWITCH  %d \n",val);
 			if (rc) {
@@ -1590,12 +1607,19 @@ static void qpnp_flash_led_work(struct work_struct *work)
 					    flash_node->prgm_current = 1000;
 		    #endif
 
+		    //jiangwei begin
+		    #if  defined(CONFIG_PROJECT_P7201)
+					if(flash_node->prgm_current)
+					    flash_node->prgm_current = 750;
+		    #endif
+		    //jiangwei end
                     //END xiongdajun modify flash current
 			val = (u8)(flash_node->prgm_current *
 				FLASH_MAX_LEVEL / flash_node->max_current);
 			rc = qpnp_led_masked_write(led->spmi_dev,
 				led->current_addr, FLASH_CURRENT_MASK, val);
 
+			printk("Ramiel FLASH (0) NOT FLASH_LED_SWITCH prgm_current= %d \n",flash_node->prgm_current);
 			printk("Ramiel FLASH (0) NOT FLASH_LED_SWITCH MAX= %d \n",flash_node->max_current);
 			printk("Ramiel FLASH (0) NOT FLASH_LED_SWITCH  %d \n",val);
 			if (rc) {
@@ -1613,11 +1637,16 @@ static void qpnp_flash_led_work(struct work_struct *work)
 				    if(flash_node->prgm_current2)
 						flash_node->prgm_current2 = 50;
 				    #endif
-                    //END xiongdajun modify flash current
+		    //jiangwei begin
+		    #if  defined(CONFIG_PROJECT_P7201)
+					if(flash_node->prgm_current2)
+					    flash_node->prgm_current2 = 750;
+		    #endif
+		    //jiangwei end                    //END xiongdajun modify flash current
 			val = (u8)(flash_node->prgm_current2 *
 				FLASH_MAX_LEVEL / flash_node->max_current);
 
-
+			printk("Ramiel FLASH (1) NOT FLASH_LED_SWITCH prgm_current2= %d \n",flash_node->prgm_current2);
 			printk("Ramiel FLASH (1) NOT FLASH_LED_SWITCH MAX= %d \n",flash_node->max_current);
 			printk("Ramiel FLASH (1) NOT FLASH_LED_SWITCH  %d \n",val);
 
