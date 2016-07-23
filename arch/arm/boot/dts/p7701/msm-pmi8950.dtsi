@@ -229,6 +229,9 @@
 			//add by lishengli 20160412
 			qcom,float-voltage-comp = <13>; //4100v
 			qcom,fastchg-current-comp = <900>; //900ma
+
+			qcom,speed-current = <3300 3000 2400 2300 2000 1000 900 450 400 0>;
+
 			qcom,chgr@1000 {
 				reg = <0x1000 0x100>;
 				interrupts =	<0x2 0x10 0x0>,
