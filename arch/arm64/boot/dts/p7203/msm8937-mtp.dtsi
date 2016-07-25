@@ -387,7 +387,7 @@
 */
 
 &mdss_dsi0 {
-	qcom,dsi-pref-prim-pan = <&dsi_ili9885_1080p_video_a_si_boe_p7701>;
+	qcom,dsi-pref-prim-pan = <&dsi_nt35595_sharp_1080p_cmd>; //LINE<20160725><only one lcd as cmd mode>wangyanhui add
 	pinctrl-names = "mdss_default", "mdss_sleep";
 	pinctrl-0 = <&mdss_dsi_active &mdss_te_active>;
 	pinctrl-1 = <&mdss_dsi_suspend &mdss_te_suspend>;
@@ -398,6 +398,14 @@
 	qcom,platform-bklight-en-gpio = <&tlmm 98 0>;
 };
 
+&dsi_nt35595_sharp_1080p_cmd { //LINE<20160725><only one lcd as cmd mode>wangyanhui add
+	qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;
+	//qcom,mdss-dsi-pan-enable-dynamic-fps;
+	//qcom,mdss-dsi-pan-fps-update = "dfps_immediate_porch_mode_vfp";
+};
+//wangyanhui end 
+
+/*
 &mdss_dsi1 {
 	qcom,dsi-pref-prim-pan = <&dsi_otm1901a_1080p_vdo>;
 	pinctrl-names = "mdss_default", "mdss_sleep";
@@ -433,6 +441,7 @@
 	//qcom,mdss-dsi-pan-enable-dynamic-fps;
 	//qcom,mdss-dsi-pan-fps-update = "dfps_immediate_porch_mode_vfp";
 };
+*/
 
 /* PM8937 GPIO configuration */
 &pm8937_gpios {

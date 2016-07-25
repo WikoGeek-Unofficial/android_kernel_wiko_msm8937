@@ -11,11 +11,9 @@
  */
 
 &mdss_mdp {
-	dsi_nt35595_sharp_1080p_video:qcom,mdss_dsi_nt35595_sharp_1080p_video{
-		qcom,mdss-dsi-panel-name = "nt35595_sharp_1080p_video";
-		qcom,mdss-dsi-panel-controller = <&mdss_dsi0>;
-		qcom,mdss-dsi-panel-type = "dsi_video_mode";
-		qcom,mdss-dsi-panel-destination = "display_1";
+	dsi_nt35595_sharp_1080p_cmd:qcom,mdss_dsi_nt35595_sharp_1080p_cmd{
+		qcom,mdss-dsi-panel-name = "nt35595_sharp_1080p_cmd";
+		qcom,mdss-dsi-panel-type = "dsi_cmd_mode";
 		qcom,mdss-dsi-panel-framerate = <60>;
 		qcom,mdss-dsi-virtual-channel-id = <0>;
 		qcom,mdss-dsi-stream = <0>;
@@ -33,15 +31,32 @@
 		qcom,mdss-dsi-v-top-border = <0>;
 		qcom,mdss-dsi-v-bottom-border = <0>;
 		qcom,mdss-dsi-bpp = <24>;
-		qcom,mdss-dsi-color-order = "rgb_swap_rgb";
-		qcom,mdss-dsi-underflow-color = <0xfffff>;
+		qcom,mdss-dsi-underflow-color = <0xff>;
 		qcom,mdss-dsi-border-color = <0>;
+		qcom,mdss-dsi-te-pin-select = <1>;
+		qcom,mdss-dsi-te-dcs-command = <1>;
+		qcom,mdss-dsi-te-check-enable;
+		qcom,mdss-dsi-te-using-te-pin;
+		qcom,mdss-dsi-h-sync-pulse = <0>;
+		qcom,mdss-dsi-traffic-mode = "burst_mode";
+		qcom,mdss-dsi-bllp-eof-power-mode;
+		qcom,mdss-dsi-bllp-power-mode;
+		qcom,mdss-dsi-lane-0-state;
+		qcom,mdss-dsi-lane-1-state;
+		qcom,mdss-dsi-lane-2-state;
+		qcom,mdss-dsi-lane-3-state;
+		qcom,mdss-dsi-panel-timings = [e6 38 26 00 68 6e 2a 3c 44 03 04 00];
+		qcom,mdss-dsi-t-clk-post = <0x02>;
+		qcom,mdss-dsi-t-clk-pre = <0x2d>;
+		qcom,mdss-dsi-tx-eot-append;
+		qcom,mdss-dsi-dma-trigger = "trigger_sw";
+		qcom,mdss-dsi-mdp-trigger = "none";
 		qcom,mdss-dsi-on-command = [15 01 00 00 00 00 02 FF 10
-					15 01 00 00 00 00 02 BB 03
+					15 01 00 00 00 00 02 BB 10
 					15 01 00 00 00 00 02 B0 03
 					39 01 00 00 28 00 06 3B 03 06 04 3C 66
 					15 01 00 00 10 00 02 FF 10
-					15 01 00 00 00 00 02 35 00
+					15 01 00 00 00 00 02 35 01
 					05 01 00 00 78 00 02 11 00
 					//15 01 00 00 00 00 02 51 FF
 					//15 01 00 00 00 00 02 53 24
@@ -56,41 +71,16 @@
 
 					15 01 00 00 00 00 02 FF 10
 					05 01 00 00 28 00 02 29 00];
-
 		qcom,mdss-dsi-off-command = [
 					15 01 00 00 00 00 02 FF 10
 					05 01 00 00 32 00 02 28 00
 					05 01 00 00 78 00 02 10 00];
 		qcom,mdss-dsi-on-command-state = "dsi_lp_mode";
-		qcom,mdss-dsi-off-command-state = "dsi_hs_mode";
-		
-		//add ESD check start
-		qcom,esd-check-enabled;
-		qcom,mdss-dsi-panel-status-command = [06 01 00 01 05 00 02 0A 08];
-		qcom,mdss-dsi-panel-status-command-state = "dsi_lp_mode";
-		qcom,mdss-dsi-panel-status-check-mode = "reg_read";
-		qcom,mdss-dsi-panel-status-read-length = <1>;
-		qcom,mdss-dsi-panel-status-value = <0x9c>;
-		//add ESD check end
-
-		qcom,mdss-dsi-h-sync-pulse = <1>;
-		qcom,mdss-dsi-traffic-mode = "burst_mode";
-		qcom,mdss-dsi-lane-map = "lane_map_0123";
-		qcom,mdss-dsi-bllp-eof-power-mode;
-		qcom,mdss-dsi-bllp-power-mode;
-		qcom,mdss-dsi-lane-0-state;
-		qcom,mdss-dsi-lane-1-state;
-		qcom,mdss-dsi-lane-2-state;
-		qcom,mdss-dsi-lane-3-state;
-		qcom,mdss-dsi-panel-timings = [D5 32 22 \
-			00 60 64 26 36 29 03 04 00];
-		qcom,mdss-dsi-t-clk-post = <0x1f>;
-		qcom,mdss-dsi-t-clk-pre = <0x2d>;
+		qcom,mdss-dsi-off-command-state = "dsi_lp_mode";
 		qcom,mdss-dsi-bl-min-level = <1>;
 		qcom,mdss-dsi-bl-max-level = <4095>;
-		qcom,mdss-dsi-dma-trigger = "trigger_sw";
-		qcom,mdss-dsi-mdp-trigger = "none";
 		qcom,mdss-dsi-bl-pmic-control-type = "bl_ctrl_wled";
 		qcom,mdss-dsi-reset-sequence = <1 10>, <0 10>, <1 10>;
+		qcom,mdss-dsi-post-init-delay = <1>;
 	};
 };
