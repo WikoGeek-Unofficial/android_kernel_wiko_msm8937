@@ -1219,6 +1219,8 @@ if (bEnTGesture) {
                     	}
                     	#endif
         	}
+
+		msleep(data->pdata->soft_rst_dly);//LINE<20160723><it effects lcd resume , so delay 200ms>wangyanhui 
             //<End>add reset when open GESTRUE;xiongdajun
             return 0;
 }
