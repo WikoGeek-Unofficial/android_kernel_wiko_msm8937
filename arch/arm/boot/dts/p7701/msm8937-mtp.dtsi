@@ -371,7 +371,7 @@
 	qcom,vdd-current-level = <15000 800000>;
 
 	/* device communication power supply */
-	vdd-io-supply = <&pm8937_l5>; //wangyanhui modify 
+	vdd-io-supply = <&pm8937_l12>; //wangyanhui modify 
 	qcom,vdd-io-voltage-level = <1800000 1800000>;
 	qcom,vdd-io-current-level = <200 22000>;
 
