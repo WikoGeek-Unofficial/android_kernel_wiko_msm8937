@@ -435,7 +435,7 @@
 				linux,default-trigger = "none";
 				qcom,default-state = "off";
 				qcom,max-current = <40>;
-				qcom,current-setting = <5>;
+				qcom,current-setting = <10>;
 				qcom,id = <6>;
 				qcom,mode = "pwm";
 				qcom,source-sel = <8>;
