@@ -972,7 +972,7 @@ static int fts_ts_stop(struct device *dev)
 	input_mt_report_pointer_emulation(data->input_dev, false);
 	input_sync(data->input_dev);
       //Begin<20160617><modify for curent when close gesture>;xiongdajun
-       #if defined(CONFIG_PROJECT_P7701) || defined(CONFIG_PROJECT_P7203)
+       #if defined(CONFIG_PROJECT_P7701) || defined(CONFIG_PROJECT_P7203)||defined(CONFIG_PROJECT_P7201)
         //if (!gpio_is_valid(data->pdata->reset_gpio)) {
 		txbuf[0] = FTS_REG_PMODE;
 		txbuf[1] = FTS_PMODE_HIBERNATE;
