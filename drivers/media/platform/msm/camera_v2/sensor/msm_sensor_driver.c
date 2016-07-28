@@ -962,6 +962,42 @@ CSID_TG:
 			store_sub_camera_info(main_camera_and_eeprom);
 		}
 	}
+//Ramiel add p7203 camera +++++++++++++++
+	  else if(!strncmp(slave_info->sensor_name, "p7203_gb_imx258", sizeof("p7203_gb_imx258")))
+	 {
+		  rc = snprintf(main_camera_and_eeprom, DEV_INFO_LEN, "%s_(13M)", 
+			  "imx258_guangbao");	  
+		  if(rc < 0){
+			  store_main_camera_info(slave_info->sensor_name);
+		  }else{
+			  store_main_camera_info(main_camera_and_eeprom);
+		  }
+	 
+	 }
+	  else if(!strncmp(slave_info->sensor_name, "p7203_sy_imx258", sizeof("p7203_sy_imx258")))
+	  {
+		  rc = snprintf(main_camera_and_eeprom, DEV_INFO_LEN, "%s_(13M)", 
+			  "imx258_sunny");	  
+		  if(rc < 0){
+			  store_main_camera_info(slave_info->sensor_name);
+		  }else{
+			  store_main_camera_info(main_camera_and_eeprom);
+		  }
+	  
+	  }
+	  else if(!strncmp(slave_info->sensor_name, "p7203_gb_s5k4h8", sizeof("p7203_gb_s5k4h8")))
+	 {
+		 rc = snprintf(sub_camera_and_eeprom, DEV_INFO_LEN, "%s_(8M)", 
+			 "s5k4h8_guangbao"); 	 
+		 if(rc < 0){
+			 store_sub_camera_info(slave_info->sensor_name);
+		 }else{
+			 store_sub_camera_info(sub_camera_and_eeprom);
+		 }
+
+	 }
+//Ramiel add p7203 camera  ---------------------
+
 	 else if(!strncmp(slave_info->sensor_name, "p7705_sunny_s5k4h8", sizeof("p7705_sunny_s5k4h8")))
 	{
 		 rc = snprintf(sub_camera_and_eeprom, DEV_INFO_LEN, "%s_(8M)", 
@@ -1044,6 +1080,7 @@ CSID_TG:
 			store_main_camera_info(main_camera_and_eeprom);
 		}
 	}
+
 #endif
 //END<REQ><FCEBL-64><20150901>Add store camera  info;xiongdajun 
 

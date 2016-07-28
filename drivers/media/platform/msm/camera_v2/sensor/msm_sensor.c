@@ -218,6 +218,12 @@ int msm_sensor_match_id(struct msm_sensor_ctrl_t *s_ctrl)
 	int rc = 0;
 	uint16_t chipid = 0;
     //BEGIN<REQ><JABAL-1500><20150804>Add camera for L5261;xiongdajun
+    #ifdef CONFIG_PROJECT_P7203
+       uint16_t mid = 0;
+	  // uint16_t mid_temp_h = 0;
+	  // uint16_t mid_temp_l = 0;	   
+      // uint16_t flag = 0;
+    #endif
     #ifdef CONFIG_PROJECT_P7701
        uint16_t mid = 0;
        uint16_t flag = 0;
@@ -339,6 +345,56 @@ int msm_sensor_match_id(struct msm_sensor_ctrl_t *s_ctrl)
 	
 			} 
 #endif
+
+
+#ifdef CONFIG_PROJECT_P7203
+
+	pr_err("%s: sensor_name is %s\n", __func__, sensor_name);
+	if((!strncmp(s_ctrl->sensordata->sensor_name, "p7203_gb_imx258", sizeof("p7203_gb_imx258"))))
+	{
+	unsigned short addr_temp = 0;
+	addr_temp = sensor_i2c_client->cci_client->sid;
+	sensor_i2c_client->cci_client->sid = 0xA0>>1;
+	
+	
+		rc = sensor_i2c_client->i2c_func_tbl->i2c_read(
+				sensor_i2c_client, 0x03,
+				&mid, MSM_CAMERA_I2C_BYTE_DATA);
+		pr_err("%s: mid is	 %d \n", __func__ , mid);
+	
+	
+		if(mid == 0x03)
+				pr_err("mid of camera is p7203_gb_imx258\n");
+		else
+				return -ENODEV;
+		sensor_i2c_client->cci_client->sid = addr_temp;
+		msleep(10);
+	
+	} 
+
+	if((!strncmp(s_ctrl->sensordata->sensor_name, "p7203_sy_imx258", sizeof("p7203_sy_imx258"))))
+	{
+	unsigned short addr_temp = 0;
+	addr_temp = sensor_i2c_client->cci_client->sid;
+	sensor_i2c_client->cci_client->sid = 0xA0>>1;
+	
+		rc = sensor_i2c_client->i2c_func_tbl->i2c_read(
+			sensor_i2c_client, 0x01,
+			&mid, MSM_CAMERA_I2C_BYTE_DATA);
+		pr_err("%s: mid is	 %d \n", __func__ , mid);
+		if(mid == 0x01)
+				pr_err("mid of camera is p7203_sy_imx258\n");
+		else
+				return -ENODEV;
+		sensor_i2c_client->cci_client->sid = addr_temp;
+		msleep(10);
+
+	} 
+
+#endif
+
+
+
 
     //Begin<REQ><JABAL-1500><20150804>Add camera for L5261;xiongdajun
 #ifdef CONFIG_PROJECT_P7701
