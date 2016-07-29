@@ -97,6 +97,26 @@ static int msm8952_wsa_switch_event(struct snd_soc_dapm_widget *w,
  * Need to report LINEIN
  * if R/L channel impedance is larger than 5K ohm
  */
+#if defined(CONFIG_PROJECT_P7201)
+static struct wcd_mbhc_config mbhc_cfg = {//yangliang mask and add for p7201 linear hph20160729
+	.read_fw_bin = false,
+	.calibration = NULL,
+	.detect_extn_cable = true,
+	.mono_stero_detection = false,
+	.swap_gnd_mic = NULL,
+	.hs_ext_micbias = false,
+	.key_code[0] = KEY_MEDIA,
+	//.key_code[1] = KEY_VOICECOMMAND,
+	.key_code[1] = KEY_VOLUMEUP,
+	.key_code[2] = KEY_VOLUMEDOWN,
+	.key_code[3] = 0,////yangliang mask and add for p7201 linear hph20160729
+	.key_code[4] = 0,
+	.key_code[5] = 0,
+	.key_code[6] = 0,
+	.key_code[7] = 0,
+	.linein_th = 5000,
+};
+#else
 static struct wcd_mbhc_config mbhc_cfg = {
 	.read_fw_bin = false,
 	.calibration = NULL,
@@ -114,6 +134,7 @@ static struct wcd_mbhc_config mbhc_cfg = {
 	.key_code[7] = 0,
 	.linein_th = 5000,
 };
+#endif
 
 static struct afe_clk_cfg mi2s_rx_clk_v1 = {
 	AFE_API_VERSION_I2S_CONFIG,
@@ -1627,6 +1648,21 @@ static void *def_msm8952_wcd_mbhc_cal(void)
 	btn_low[4] = 500;
 	btn_high[4] = 500;
 	#endif 
+
+	//yangliang mask and add for p7201 linear hph20160729
+	#if defined(CONFIG_PROJECT_P7201)
+ 	btn_low[0] = 100;
+	btn_high[0] = 100;
+	btn_low[1] = 250;
+	btn_high[1] = 250;
+	btn_low[2] = 438;
+	btn_high[2] = 438;
+	btn_low[3] = 480;
+	btn_high[3] = 480;
+	btn_low[4] = 500;
+	btn_high[4] = 500;
+	#endif
+
 	return msm8952_wcd_cal;
 }
 
