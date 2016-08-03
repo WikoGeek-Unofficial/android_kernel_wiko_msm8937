@@ -55,7 +55,13 @@ static int g_hall_state = 0;
 //const int keycode = KEY_MEDIA;
 static  void sendevent(int status ,struct input_dev *dev_input)
 {
+// Shuai.Chen, Date20160803, Modify For Hall Mode, HCABMA-313, Start
+#ifdef CONFIG_WIKO_UNIFY
+	if(status == 1)
+#else
         if(status == 0)
+#endif
+// Shuai.Chen, Date20160803, Modify For Hall Mode, HCABMA-313, End
         {
             #ifdef CONFIG_SWITCH//yangliang add for ftm-hph switch;20150830
             switch_set_state(&hall_sensor_data, 1);
