@@ -197,7 +197,7 @@
 			#size-cells = <1>;
 
                         //add by lishengli 20160519
-			qcom,iterm-ma = <300>;
+			qcom,iterm-ma = <250>;
 			qcom,float-voltage-mv = <4400>;
 			qcom,resume-delta-mv = <200>;
 			//add by lishengli
