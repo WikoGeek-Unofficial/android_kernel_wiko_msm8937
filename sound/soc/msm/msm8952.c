@@ -52,7 +52,7 @@
 #define MSM_DT_MAX_PROP_SIZE 80
 
 //++ camera selfie stick TN:peter
-#if defined CONFIG_PROJECT_P7705 ||defined CONFIG_PROJECT_P7203
+#if defined CONFIG_PROJECT_P7705 ||defined CONFIG_PROJECT_P7203 ||defined CONFIG_PROJECT_P7201
 #define CAMERA_SELFIE_STICK
 #endif
 //-- camera selfie stick
