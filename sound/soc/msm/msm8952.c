@@ -52,7 +52,7 @@
 #define MSM_DT_MAX_PROP_SIZE 80
 
 //++ camera selfie stick TN:peter
-#if defined CONFIG_PROJECT_P7705 ||defined CONFIG_PROJECT_P7203 ||defined CONFIG_PROJECT_P7201
+#if defined CONFIG_PROJECT_P7705 ||defined CONFIG_PROJECT_P7203 ||defined CONFIG_PROJECT_P7201 ||defined CONFIG_PROJECT_P7701
 #define CAMERA_SELFIE_STICK
 #endif
 //-- camera selfie stick
@@ -1636,7 +1636,7 @@ static void *def_msm8952_wcd_mbhc_cal(void)
 	#endif
 	
 	//bt2 ==> camera selfie stick TN:peter 
-	#if defined CONFIG_PROJECT_P7705 ||defined CONFIG_PROJECT_P7203//TN:peter
+	#if defined CONFIG_PROJECT_P7705 ||defined CONFIG_PROJECT_P7203 ||defined CONFIG_PROJECT_P7701//TN:peter
 	btn_low[0] = 75;
 	btn_high[0] = 75;
 	btn_low[1] = 100;

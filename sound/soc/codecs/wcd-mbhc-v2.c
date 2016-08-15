@@ -61,7 +61,7 @@ extern bool ext_spk_pa_current_state;
 #define ANC_DETECT_RETRY_CNT 7
 #define WCD_MBHC_SPL_HS_CNT  1
 //++ camera selfie stick TN:peter
-#if defined CONFIG_PROJECT_P7705 ||defined CONFIG_PROJECT_P7203 ||defined CONFIG_PROJECT_P7201
+#if defined CONFIG_PROJECT_P7705 ||defined CONFIG_PROJECT_P7203 ||defined CONFIG_PROJECT_P7201 ||defined CONFIG_PROJECT_P7701
 #define CAMERA_SELFIE_STICK
 #endif
 //-- camera selfie stick
