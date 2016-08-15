@@ -136,7 +136,7 @@ static unsigned char CTPM_FW[] = {
 #ifdef CONFIG_PROJECT_P7701
 	#include "ft5436_fw_app_p7701.i"
 #elif defined(CONFIG_PROJECT_P7201)||defined(CONFIG_PROJECT_P7203)
-	#include "FT5346_BOEN_TL_app_p7201.i"
+	#include "FT5346_BOEN_TL_7201_V21_D01_20160805_app.i"
 #else
 	#include "FT_Upgrade_App.i"
 #endif
@@ -3218,7 +3218,7 @@ static int save_ft5xx_tp_info(int product_id, char *config_id, int id)
         }
         else if(product_id ==  FTS_CTP_VENDOR_BOEN) //LINE<20160617><add tp info for p7201>wangyanhui
         {
-            sprintf(buf, "BOEN-%s-%s--V%d",
+            sprintf(buf, "BOEN-%s-%s--V%X",
                     CONFIG_PRODUCT_NAME , ic_name, config_id[0]);
 	}
         else{
