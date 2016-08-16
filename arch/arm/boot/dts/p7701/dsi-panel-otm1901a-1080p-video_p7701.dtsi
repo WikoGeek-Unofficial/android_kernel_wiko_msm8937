@@ -195,7 +195,8 @@
 		qcom,mdss-dsi-bllp-eof-power-mode;
 		qcom,mdss-dsi-bllp-power-mode;
 		qcom,mdss-dsi-lp11-init;
-		qcom,mdss-dsi-init-delay-us = <5>;
+		qcom,mdss-dsi-init-delay-us = <200>;
+             qcom,mdss-dsi-tx-eot-append;
 		qcom,mdss-dsi-lane-0-state;
 		qcom,mdss-dsi-lane-1-state;
 		qcom,mdss-dsi-lane-2-state;
