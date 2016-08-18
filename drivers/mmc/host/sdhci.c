@@ -783,6 +783,13 @@ static u8 sdhci_calc_timeout(struct sdhci_host *host, struct mmc_command *cmd)
 	 * longer to time out, but that's much better than having a too-short
 	 * timeout value.
 	 */
+
+
+        //LINE<JIRA_ID><DATE20160816><set max timeout>zenghaihui
+        //pr_info("%s: %d, %s \n",    __func__, __LINE__, mmc_hostname(host->mmc));
+        return 0xF;
+
+    
 	if (host->quirks & SDHCI_QUIRK_BROKEN_TIMEOUT_VAL)
 		return 0xE;
 
