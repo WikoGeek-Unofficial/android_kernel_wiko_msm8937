@@ -4028,6 +4028,16 @@ int sdhci_add_host(struct sdhci_host *host)
 	} else if (caps[1] & SDHCI_SUPPORT_SDR50)
 		mmc->caps |= MMC_CAP_UHS_SDR50;
 
+//LINE<JIRA_ID><DATE20160816><disable SDR104>zenghaihui
+#if 1
+             //pr_err("clency mmc_hostname(mmc) = %s \n", mmc_hostname(mmc));
+             if(!strcmp("mmc1",mmc_hostname(mmc))){
+                       mmc->caps &=~ (MMC_CAP_UHS_SDR104);
+                       pr_err("clency add mask SDR104\n");
+             }
+#endif
+
+
 	if (host->quirks2 & SDHCI_QUIRK2_CAPS_BIT63_FOR_HS400 &&
 	    (caps[1] & SDHCI_SUPPORT_HS400))
 		mmc->caps2 |= MMC_CAP2_HS400;
