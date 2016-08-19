@@ -21,6 +21,7 @@
 #include "dsi-panel-r69006-1080p-video.dtsi"
 #include "dsi-panel-r69006-1080p-cmd.dtsi"
 #include "dsi-panel-truly-wuxga-video.dtsi"
+#include "dsi-panel-wd5eaf01-boe-1080p-video.dtsi"
 
 &soc {
 	dsi_panel_pwr_supply: dsi_panel_pwr_supply {
@@ -64,6 +65,14 @@
 			qcom,supply-post-on-sleep = <10>;
 		};
 	};
+};
+
+&dsi_wd5eaf01_boe_1080_vid {
+	qcom,mdss-dsi-panel-timings-8996 = [23 1e 08 09 05 03 04 a0
+		23 1e 08 09 05 03 04 a0
+		23 1e 08 09 05 03 04 a0
+		23 1e 08 09 05 03 04 a0
+		23 1a 08 09 05 03 04 a0];
 };
 
 &dsi_truly_1080_vid {
