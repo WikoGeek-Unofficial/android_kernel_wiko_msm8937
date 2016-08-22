@@ -43,8 +43,6 @@
 	qcom,hot-bat-decidegc = <600>;
 	qcom,warm-bat-decidegc = <450>;
 	qcom,bad-battery-detection-enable;
-	qcom,fg-delta-soc = <1>;
-	qcom,resume-soc = <99>;
 };
 
 &pmi8950_charger {
