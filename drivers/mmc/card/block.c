@@ -1338,7 +1338,8 @@ static int mmc_blk_cmd_recovery(struct mmc_card *card, struct request *req,
 	 * and why there was no response.  If the first attempt fails,
 	 * we can't be sure the returned status is for the r/w command.
 	 */
-	for (retry = 2; retry >= 0; retry--) {
+	 //LINE<JIRA_ID><DATE20160822><inc the retry number to 5>zenghaihui
+	for (retry = 5/*2*/; retry >= 0; retry--) {
 		err = get_card_status(card, &status, 0);
 		if (!err)
 			break;
