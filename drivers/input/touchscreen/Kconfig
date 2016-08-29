@@ -1182,4 +1182,17 @@ config TOUCHSCREEN_FT5XX
          To compile this driver as a module, choose M here: the
          module will be called ft5xx_ts.
 
+config TOUCHSCREEN_GT1XX
+       tristate "FocalTech touchscreens"
+       depends on I2C
+       help
+         Say Y here if you have a gt1XX touchscreen.
+	 GT1xx controllers are multi touch controllers which can
+	 report 5 touches at a time.
+
+         If unsure, say N.
+
+         To compile this driver as a module, choose M here: the
+         module will be called gt1xx_ts.
+
 endif

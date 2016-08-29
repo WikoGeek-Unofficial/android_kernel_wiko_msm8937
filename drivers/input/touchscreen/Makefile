@@ -95,4 +95,5 @@ obj-$(CONFIG_TOUCHSCREEN_GT9XX)		+= gt9xx/
 #Line <REQ> <20150724> <goodix>add GESTURE_WAKEUP
 obj-$(CONFIG_TP_TGESTURE)		+= tgesture/
 obj-$(CONFIG_TOUCHSCREEN_FT5XX)		+= ft5xx/
+obj-$(CONFIG_TOUCHSCREEN_GT1XX)		+= gt1xx/
 
