@@ -26,6 +26,7 @@
 #include "dsi-panel-ili9885-1080p-video-a-si-boe-p7701.dtsi" //wangyanhui add lcd
 #include "dsi-panel-otm1901a-1080p-video_p7701.dtsi"
 #include "dsi-panel-nt35596h-1080p-video_p7701.dtsi"         //<REQ><20160530>add TCL panel;xiongdajun
+#include "dsi-panel-hx8394-1080p-video-a-si-boe-p7701.dtsi"         //<REQ><20160727>add HX8394 panel;xiongdajun
 
 &soc {
 	dsi_panel_pwr_supply: dsi_panel_pwr_supply {
