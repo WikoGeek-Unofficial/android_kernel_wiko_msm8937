@@ -3206,10 +3206,17 @@ static int save_ft5xx_tp_info(int product_id, char *config_id, int id)
 {
 	char buf[80];
        char ic_name[16];
+	#if defined(CONFIG_PROJECT_P7201)	   
          if ((id==0x54))
 	{
+		sprintf(ic_name, "FT%d3%d",5,46);
+	}
+	#else
+	if ((id==0x54))
+	{
 		sprintf(ic_name, "FT%d4%d",5,36);
-	}	
+	}
+	#endif
 
  //pr_info("xiongdajun add %d %x %d\n",product_id,config_id[0],id);
         if(product_id == FTS_CTP_VENDOR_YEJI){
