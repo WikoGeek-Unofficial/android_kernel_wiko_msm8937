@@ -1066,6 +1066,16 @@ CSID_TG:
 		 }
 
 	}
+	 else if(!strncmp(slave_info->sensor_name, "ov8856", sizeof("ov8856")))
+	{
+		 rc = snprintf(sub_camera_and_eeprom, DEV_INFO_LEN, "%s_(8M)", "ov8856");
+		 if(rc < 0){
+			 store_sub_camera_info(slave_info->sensor_name);
+		 }else{
+			 store_sub_camera_info(sub_camera_and_eeprom);
+		 }
+
+	}
        //END<20160617><add camera info for 7201>wangyanhui	 
 	else
 	{
