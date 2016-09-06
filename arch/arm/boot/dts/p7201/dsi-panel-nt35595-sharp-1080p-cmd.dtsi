@@ -82,5 +82,7 @@
 		qcom,mdss-dsi-bl-pmic-control-type = "bl_ctrl_wled";
 		qcom,mdss-dsi-reset-sequence = <1 10>, <0 10>, <1 10>;
 		qcom,mdss-dsi-post-init-delay = <1>;
+		qcom,mdss-pan-physical-width-dimension = <59>;
+		qcom,mdss-pan-physical-height-dimension = <104>;
 	};
 };
