@@ -35,6 +35,16 @@ int gt1x_int_gpio;
 int gt1x_vdd_gpio;
 #endif
 
+#if GTP_PINCTRL
+static	struct pinctrl *ts_pinctrl;
+static	struct pinctrl_state *pinctrl_state_active;
+static	struct pinctrl_state *pinctrl_state_suspend;
+static	struct pinctrl_state *pinctrl_state_release;
+#define PINCTRL_STATE_ACTIVE	"pmx_ts_active"
+#define PINCTRL_STATE_SUSPEND	"pmx_ts_suspend"
+#define PINCTRL_STATE_RELEASE	"pmx_ts_release"
+#endif /*GTP_PINCTRL*/
+
 static int gt1x_register_powermanger(void);
 static int gt1x_unregister_powermanger(void);
 
@@ -392,7 +402,7 @@ static int gt1xx_gpio_configure(bool on)
 				goto err_vdd_gpio_dir;
 			}
 
-			err = gpio_direction_output(gt1x_vdd_gpio,0);
+			err = gpio_direction_output(gt1x_vdd_gpio,1);
 			if (err) {
 				GTP_ERROR("set_direction for irq gpio failed\n");
 				goto err_vdd_gpio_dir;
@@ -569,6 +579,63 @@ static s8 gt1x_request_input_dev(void)
 	return 0;
 }
 
+/*******************************************************************************
+*  Name: gtp_ts_pinctrl_init
+*  Brief:
+*  Input:
+*  Output: 
+*  Return: 
+*******************************************************************************/
+#if GTP_PINCTRL
+static int gtp_ts_pinctrl_init(struct device *dev)
+{
+	int retval;
+
+	/* Get pinctrl if target uses pinctrl */
+	ts_pinctrl = devm_pinctrl_get(dev);
+	if (IS_ERR_OR_NULL(ts_pinctrl)) {
+		retval = PTR_ERR(ts_pinctrl);
+		dev_dbg(dev,
+			"Target does not use pinctrl %d\n", retval);
+		goto err_pinctrl_get;
+	}
+
+	pinctrl_state_active = pinctrl_lookup_state(ts_pinctrl,PINCTRL_STATE_ACTIVE);
+	if (IS_ERR_OR_NULL(pinctrl_state_active)) {
+		retval = PTR_ERR(pinctrl_state_active);
+		dev_err(dev,
+			"Can not lookup %s pinstate %d\n",
+			PINCTRL_STATE_ACTIVE, retval);
+		goto err_pinctrl_lookup;
+	}
+
+	pinctrl_state_suspend = pinctrl_lookup_state(ts_pinctrl,PINCTRL_STATE_SUSPEND);
+	if (IS_ERR_OR_NULL(pinctrl_state_suspend)) {
+		retval = PTR_ERR(pinctrl_state_suspend);
+		dev_err(dev,
+			"Can not lookup %s pinstate %d\n",
+			PINCTRL_STATE_SUSPEND, retval);
+		goto err_pinctrl_lookup;
+	}
+
+	pinctrl_state_release = pinctrl_lookup_state(ts_pinctrl,PINCTRL_STATE_RELEASE);
+	if (IS_ERR_OR_NULL(pinctrl_state_release)) {
+		retval = PTR_ERR(pinctrl_state_release);
+		dev_dbg(dev,
+			"Can not lookup %s pinstate %d\n",
+			PINCTRL_STATE_RELEASE, retval);
+	}
+
+	return 0;
+
+err_pinctrl_lookup:
+	devm_pinctrl_put(ts_pinctrl);
+err_pinctrl_get:
+	ts_pinctrl = NULL;
+	return retval;
+}
+#endif /*GTP_PINCTRL*/
+
 /**
  * gt1x_ts_probe -   I2c probe.
  * @client: i2c device struct.
@@ -578,6 +645,9 @@ static s8 gt1x_request_input_dev(void)
 static int gt1x_ts_probe(struct i2c_client *client, const struct i2c_device_id *id)
 {
 	s32 ret = -1;
+#if GTP_PINCTRL	
+	int err;
+#endif
 #if GTP_AUTO_UPDATE
 	struct task_struct *thread = NULL;
 #endif
@@ -598,6 +668,22 @@ static int gt1x_ts_probe(struct i2c_client *client, const struct i2c_device_id *
 		gt1x_parse_dt(&client->dev);
 	}
 #endif
+
+#if GTP_PINCTRL
+	ret = gtp_ts_pinctrl_init(&client->dev);
+	if (!err && ts_pinctrl) {
+		/*
+		 * Pinctrl handle is optional. If pinctrl handle is found
+		 * let pins to be configured in active state. If not
+		 * found continue further without error.
+		 */
+		err = pinctrl_select_state(ts_pinctrl,pinctrl_state_active);
+		if (err < 0) {
+			dev_err(&client->dev,
+				"failed to select pin to active state");
+		}
+	}
+#endif /*GTP_PINCTRL*/
 
 	ret = gt1x_request_io_port();
 	if (ret < 0) {

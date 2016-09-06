@@ -131,32 +131,6 @@
 			};
 		};
 
-		hsuart_active: default {
-			mux {
-				pins = "gpio0", "gpio1", "gpio2", "gpio3";
-				function = "blsp_uart1";
-			};
-
-			config {
-				pins = "gpio0", "gpio1", "gpio2", "gpio3";
-				drive-strength = <16>;
-				bias-disable;
-			};
-		};
-
-		hsuart_sleep: sleep {
-			mux {
-				pins = "gpio0", "gpio1", "gpio2", "gpio3";
-				function = "gpio";
-			};
-
-			config {
-				pins = "gpio0", "gpio1", "gpio2", "gpio3";
-				drive-strength = <2>;
-				bias-disable;
-			};
-		};
-
 		sdhc2_cd_pin {
 			sdc2_cd_on: cd_on {
 				mux {

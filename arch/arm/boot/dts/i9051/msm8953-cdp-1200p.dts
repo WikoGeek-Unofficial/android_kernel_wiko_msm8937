@@ -62,32 +62,6 @@
 	};
 };
 
-&hsuart_active {
-		mux {
-			pins = "gpio13", "gpio14", "gpio15";
-			function = "blsp_uart4";
-		};
-
-		config {
-			pins = "gpio13", "gpio14", "gpio15";
-			drive-strength = <16>;
-			bias-disable;
-		};
-};
-
-&hsuart_sleep {
-	      mux {
-		      pins = "gpio13", "gpio14", "gpio15";
-		      function = "gpio";
-	      };
-
-	      config {
-		      pins = "gpio13", "gpio14", "gpio15";
-		      drive-strength = <2>;
-		      bias-disable;
-	      };
-};
-
 &pm8953_mpps {
 	mpp@a300 {
 		/* MPP4 - PWM config */
