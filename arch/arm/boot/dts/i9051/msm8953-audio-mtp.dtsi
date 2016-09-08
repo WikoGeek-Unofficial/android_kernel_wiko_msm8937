@@ -15,6 +15,9 @@
 	status = "okay";
 	qcom,model = "msm8953-snd-card-mtp";
 	qcom,msm-hs-micbias-type = "internal";
+
+	qcom,msm-mbhc-hphl-swh = <1>;//yangliang add for no-hph 20160908
+	qcom,msm-mbhc-gnd-swh = <1>;//yangliang add for no-hph 20160908
 };
 
 &pm8953_diangu_dig {
