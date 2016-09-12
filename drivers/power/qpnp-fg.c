@@ -2201,7 +2201,7 @@ printk("get_prop_capacity 1 !\n");
 
 	if (!chip->profile_loaded && !chip->use_otp_profile)
 		//return DEFAULT_CAPACITY;
-        return get_monotonic_soc_raw(chip);//LINE<BUG><><Battery soc hopping form 1% to 50% after power on ><20160906>huiyong.yin
+        return DIV_ROUND_CLOSEST((get_monotonic_soc_raw(chip) - 1) * (FULL_CAPACITY - 1),FULL_SOC_RAW - 2) + 1;//LINE<BUG><><Battery soc hopping form 1% to 50% after power on ><20160906>huiyong.yin
 
 	if (chip->charge_full)
 		return FULL_CAPACITY;
