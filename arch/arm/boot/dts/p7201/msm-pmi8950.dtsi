@@ -335,7 +335,7 @@
 			qcom,fg-cc-cv-threshold-mv = <4390>;
 			//add by lishengli 20160519 
 			qcom,hold-soc-while-full;
-			qcom,vbat-estimate-diff-mv =<40>;
+			qcom,vbat-estimate-diff-mv =<100>;
 			qcom,resume-soc = <98>;
 			status = "okay";
 			qcom,bcl-lm-threshold-ma = <127>;
